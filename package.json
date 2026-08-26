@@ -1,0 +1,27 @@
+{
+	"name": "commanddeliverysystem",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "node app.ts",
+		"vitest": "vitest"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/TheEmeraldEnd/CommandDeliverySystem.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "commonjs",
+	"bugs": {
+		"url": "https://github.com/TheEmeraldEnd/CommandDeliverySystem/issues"
+	},
+	"homepage": "https://github.com/TheEmeraldEnd/CommandDeliverySystem#readme",
+	"dependencies": {
+		"node": "^26.7.0",
+		"vitest": "^4.1.11"
+	}
+}
