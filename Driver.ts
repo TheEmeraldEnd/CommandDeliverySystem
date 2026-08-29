@@ -15,12 +15,12 @@ export interface DriverInterface {
 export class Driver {
 	constructor() {}
 
-	static SyncEventHandler(incomingFunctions: () => boolean): boolean {
+	static SyncEventHandler(incomingFunctions: (() => boolean)[]): boolean {
 		return true;
 	}
 
 	static async AsyncEventHandler(
-		incomingFunctions: () => Promise<boolean>,
+		incomingFunctions: (() => Promise<boolean>)[],
 		timeInterval: number,
 	): Promise<boolean> {
 		return true;
