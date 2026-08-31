@@ -1,7 +1,8 @@
-import { test, describe, expect } from 'vitest';
-import { Driver } from './Driver';
+import { test, describe, expect } from "vitest";
+import { Driver, DriverEventInterface } from "./Driver";
+import { GetAllPortClasses } from "./Setup";
 
-describe('Testing Sync event handler', () => {
+describe("Testing Sync event handler", () => {
 	//Used for populating the functions
 	function FalseTestFunction(): boolean {
 		return false;
@@ -11,30 +12,30 @@ describe('Testing Sync event handler', () => {
 		return true;
 	}
 
-	describe('Test No methods', () => {
-		test('Test No Methods Only', () => {
+	describe("Test No methods", () => {
+		test("Test No Methods Only", () => {
 			const arrayOfFunctions: (() => boolean)[] = [];
 
 			expect(Driver.SyncEventHandler(arrayOfFunctions)).toBe(true);
 		});
 	});
 
-	describe('Test single functions', () => {
-		test('Test for success', () => {
+	describe("Test single functions", () => {
+		test("Test for success", () => {
 			const arrayOfFunctions: (() => boolean)[] = [TrueTestFunction];
 
 			expect(Driver.SyncEventHandler(arrayOfFunctions)).toBe(true);
 		});
 
-		test('Test if single method can handle failure', () => {
+		test("Test if single method can handle failure", () => {
 			const arrayOfFunctions: (() => boolean)[] = [FalseTestFunction];
 
 			expect(Driver.SyncEventHandler(arrayOfFunctions)).toBe(false);
 		});
 	});
 
-	describe('Test multiple methods', () => {
-		test('Test for all success', () => {
+	describe("Test multiple methods", () => {
+		test("Test for all success", () => {
 			const arrayOfFunctions: (() => boolean)[] = [
 				TrueTestFunction,
 				TrueTestFunction,
@@ -43,7 +44,7 @@ describe('Testing Sync event handler', () => {
 			expect(Driver.SyncEventHandler(arrayOfFunctions)).toBe(true);
 		});
 
-		test('Test for not all, but one or more fail', () => {
+		test("Test for not all, but one or more fail", () => {
 			const arrayOfFunctions: (() => boolean)[] = [
 				TrueTestFunction,
 				FalseTestFunction,
@@ -54,7 +55,7 @@ describe('Testing Sync event handler', () => {
 			expect(Driver.SyncEventHandler(arrayOfFunctions)).toBe(false);
 		});
 
-		test('Test for if all fail', () => {
+		test("Test for if all fail", () => {
 			const arrayOfFunctions: (() => boolean)[] = [
 				FalseTestFunction,
 				FalseTestFunction,
@@ -66,7 +67,7 @@ describe('Testing Sync event handler', () => {
 	});
 });
 
-describe('Testing Async Event Handler', () => {
+describe("Testing Async Event Handler", () => {
 	const TIME_INTERVAL_MILISECONDS_LONG: number = 3000;
 	const TIME_INTERVAL_MILISECONDS: number = 2000;
 	const TIME_INTERVAL_MILISECONDS_SHORT: number = 1000;
@@ -87,8 +88,8 @@ describe('Testing Async Event Handler', () => {
 		return true;
 	}
 
-	describe('Test no method', () => {
-		test('Test success', async () => {
+	describe("Test no method", () => {
+		test("Test success", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [];
 			let heartbeatInterval: number = TIME_INTERVAL_MILISECONDS;
 
@@ -100,7 +101,7 @@ describe('Testing Async Event Handler', () => {
 			expect(result).toBe(true);
 		});
 
-		test('Test if going through no functions trigger the time interval failure', async () => {
+		test("Test if going through no functions trigger the time interval failure", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [];
 			let heartbeatInterval: number = TIME_INTERVAL_MILISECONDS_PLANK;
 
@@ -113,8 +114,8 @@ describe('Testing Async Event Handler', () => {
 		});
 	});
 
-	describe('Test one method', () => {
-		test('Test if success', async () => {
+	describe("Test one method", () => {
+		test("Test if success", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [
 				TrueTestFunction,
 			];
@@ -128,7 +129,7 @@ describe('Testing Async Event Handler', () => {
 			expect(result).toBe(true);
 		});
 
-		test('Test for failure', async () => {
+		test("Test for failure", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [
 				FalseTestFunction,
 			];
@@ -142,7 +143,7 @@ describe('Testing Async Event Handler', () => {
 			expect(result).toBe(false);
 		});
 
-		test('Test if time interval overflow will trigger a fail', async () => {
+		test("Test if time interval overflow will trigger a fail", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [
 				WaitForTimeFailMedium,
 			];
@@ -158,8 +159,8 @@ describe('Testing Async Event Handler', () => {
 		});
 	});
 
-	describe('Test multiple functions', () => {
-		test('Test multiple functions returning true', async () => {
+	describe("Test multiple functions", () => {
+		test("Test multiple functions returning true", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [
 				TrueTestFunction,
 				TrueTestFunction,
@@ -176,7 +177,7 @@ describe('Testing Async Event Handler', () => {
 			expect(result).toBe(true);
 		});
 
-		test('Test multiple functions returning true', async () => {
+		test("Test multiple functions returning true", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [
 				TrueTestFunction,
 				FalseTestFunction,
@@ -193,7 +194,7 @@ describe('Testing Async Event Handler', () => {
 			expect(result).toBe(false);
 		});
 
-		test('Test if mix of true and false return false', async () => {
+		test("Test if mix of true and false return false", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [
 				TrueTestFunction,
 				FalseTestFunction,
@@ -211,7 +212,7 @@ describe('Testing Async Event Handler', () => {
 			expect(result).toBe(false);
 		});
 
-		test('Test if time failure return false', async () => {
+		test("Test if time failure return false", async () => {
 			const arrayOfFunctions: (() => Promise<boolean>)[] = [
 				TrueTestFunction,
 				TrueTestFunction,
@@ -228,4 +229,14 @@ describe('Testing Async Event Handler', () => {
 			expect(result).toBe(false);
 		});
 	});
+});
+
+describe("Testing adding Interface of methods", () => {
+	//TODO: Need a mock array of interfaces for classes
+
+	//TODO: Set up tests for interface collection
+
+	test("Test collection of the interfaces (not mock data)", () => {});
+
+	test("Test if the interfaces can ");
 });

@@ -1,4 +1,4 @@
-export interface DriverInterface {
+export interface DriverEventInterface {
 	//Triggered on when the driver is starting startup
 	StartupMethod(): boolean;
 
@@ -13,7 +13,15 @@ export interface DriverInterface {
 }
 
 export class Driver {
-	constructor() {}
+	static InterfaceEventClasses: DriverEventInterface[];
+
+	constructor() {
+		Driver.CollectInterfaceClasses();
+	}
+
+	static CollectInterfaceClasses() {
+		//TODO: collect from the Setup.ts itself by lookting through array
+	}
 
 	static SyncEventHandler(incomingFunctions: (() => boolean)[]): boolean {
 		return true;
