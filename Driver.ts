@@ -1,3 +1,5 @@
+import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder";
+
 export interface DriverEventInterface {
 	//Triggered on when the driver is starting startup
 	StartupMethod(): boolean;
@@ -13,15 +15,18 @@ export interface DriverEventInterface {
 }
 
 export class Driver {
+	//Delete the class
 	static InterfaceEventClasses: DriverEventInterface[];
 
 	constructor() {
-		Driver.CollectInterfaceClasses();
+		Driver.InitializeApp();
 	}
 
-	static CollectInterfaceClasses() {
-		//TODO: collect from the Setup.ts itself by lookting through array
+	static InitializeApp() {
+		this.InterfaceEventClasses = [new EncoderDecoder()];
 	}
+
+	static RunApp() {}
 
 	static SyncEventHandler(incomingFunctions: (() => boolean)[]): boolean {
 		return true;

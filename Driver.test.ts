@@ -1,6 +1,5 @@
 import { test, describe, expect } from "vitest";
 import { Driver, DriverEventInterface } from "./Driver";
-import { GetAllPortClasses } from "./Setup";
 
 describe("Testing Sync event handler", () => {
 	//Used for populating the functions
