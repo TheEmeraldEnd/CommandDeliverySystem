@@ -1,5 +1,6 @@
 import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder";
 
+//Methods should default to true or await true if not defined in inherited methods
 export interface DriverEventInterface {
 	//Triggered on when the driver is starting startup
 	StartupMethod(): boolean;
