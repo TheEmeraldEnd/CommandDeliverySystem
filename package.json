@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "node app.ts",
+		"dev": "node src/app.ts",
+		"typescript": "npx tsc",
 		"vitest": "vitest"
 	},
 	"repository": {
@@ -15,7 +16,7 @@
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"type": "commonjs",
+	"type": "module",
 	"bugs": {
 		"url": "https://github.com/TheEmeraldEnd/CommandDeliverySystem/issues"
 	},
@@ -23,5 +24,8 @@
 	"dependencies": {
 		"node": "^26.7.0",
 		"vitest": "^4.1.11"
+	},
+	"devDependencies": {
+		"typescript": "^7.0.2"
 	}
 }
