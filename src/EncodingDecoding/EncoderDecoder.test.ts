@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { EncoderDecoder } from "./EncoderDecoder";
+import { EncoderDecoder } from "./EncoderDecoder.ts";
 
 describe.skip("test the encryption and decryption by themselves", () => {
 	test.skip("Test if encryption is the different after success", () => {

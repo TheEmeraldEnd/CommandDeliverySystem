@@ -1,4 +1,7 @@
-console.log("Hello world");
-for (let i = 0; i < 1000; i++) {
-	console.log(i);
-}
+import { Driver } from "./Driver.ts";
+
+Driver.InitializeApp();
+
+Driver.RunApp();
+
+console.log("Test 123");

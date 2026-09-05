@@ -1,4 +1,3 @@
-import {} from "../Driver";
 //For future development, so this will focus on only being part of the passing of information
 export class EncoderDecoder {
     static isEncryptToggle = false;
@@ -39,4 +38,3 @@ export class EncoderDecoder {
         return false;
     }
 }
-//# sourceMappingURL=EncoderDecoder.js.map

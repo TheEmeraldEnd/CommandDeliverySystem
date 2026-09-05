@@ -1,4 +1,4 @@
-import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder.ts";
+import { EncoderDecoder } from "./src/EncodingDecoding/EncoderDecoder";
 
 //Methods should default to true or await true if not defined in inherited methods
 export interface IDriverEventInterface {
@@ -24,14 +24,16 @@ export class Driver {
 	}
 
 	static InitializeApp() {
-		this.InterfaceEventClasses = [new EncoderDecoder()];
+		//this.InterfaceEventClasses = [new EncoderDecoder()];
 	}
 
 	static RunApp() {
 		//Start the events
-		let isStartSuccessful = this.SyncEventHandler(
-			this.InterfaceEventClasses.map((i) => i.StartupMethod),
-		);
+		// let isStartSuccessful = this.SyncEventHandler(
+		// 	this.InterfaceEventClasses.map((i) => i.StartupMethod),
+		// );
+
+		console.log("This is a new thing");
 
 		//Run the heartbeats
 

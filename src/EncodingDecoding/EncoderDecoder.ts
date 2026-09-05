@@ -1,4 +1,4 @@
-import { type IDriverEventInterface } from "../Driver";
+import { type IDriverEventInterface } from "../Driver.ts";
 
 //For future development, so this will focus on only being part of the passing of information
 export class EncoderDecoder implements IDriverEventInterface {

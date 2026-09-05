@@ -1,5 +1,5 @@
 import { test, describe, expect } from "vitest";
-import { Driver, type IDriverEventInterface } from "./Driver";
+import { Driver, type IDriverEventInterface } from "./Driver.ts";
 
 describe("Testing Sync event handler", () => {
 	//Used for populating the functions
