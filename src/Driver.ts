@@ -1,4 +1,4 @@
-import { EncoderDecoder } from './EncodingDecoding/EncoderDecoder.ts';
+import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder.ts";
 
 //Methods should default to true or await true if not defined in inherited methods
 export interface IDriverEventInterface {
@@ -60,7 +60,7 @@ export class Driver {
 		incomingFunctions: (() => Promise<boolean>)[],
 		timeInterval: number,
 	): Promise<boolean> {
-		//No function guard
+		//0 functions guard
 		if (incomingFunctions.length === 0) {
 			return true;
 		}
@@ -69,22 +69,37 @@ export class Driver {
 		const timerWithInterval = async () => {
 			await new Promise((resolve) =>
 				setTimeout(
-					() => resolve(console.log('Timer Done')),
+					() => resolve(console.log("Timer Done")),
 					timeInterval,
 				),
 			);
 			return false;
 		};
 
+		const arrayOfFunctionCall = async () =>
+			await Promise.allSettled(
+				incomingFunctions.map(async (x) => await x()),
+			).then(function (result) {
+				return result;
+			});
+
 		//Should have a race between all settled functions and the timer
 		// TODO: Need to figure out the typing in this promise race.
-		// let result: boolean = await Promise.race([
-		// 	await Promise.allSettled(incomingFunctions),
-		// 	await timerWithInterval,
-		// ]).then((promiseResult) => {
-		// 	if ((typeof promiseResult) === Boolean)
-		// });
+		let result: boolean = await Promise.race([
+			await arrayOfFunctionCall(),
+			await timerWithInterval(),
+		]).then((promiseResult) => {
+			// if (typeof promiseResult === typeof []) {
+			// 	return promiseResult
+			// 		.map((callBack) => callBack.value)
+			// 		.every((value) => value === true);
+			// } else {
+			// 	return promiseResult.value;
+			// }
 
-		return true;
+			return true;
+		});
+
+		return result;
 	}
 }
