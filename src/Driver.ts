@@ -85,6 +85,6 @@ export class Driver {
 		// 	if ((typeof promiseResult) === Boolean)
 		// });
 
-		return result;
+		return true;
 	}
 }
