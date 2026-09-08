@@ -41,13 +41,19 @@ export class Driver {
 	}
 
 	static SyncEventHandler(incomingFunctions: (() => boolean)[]): boolean {
-		// let arrayOfResults: boolean[] = [];
+		//Shortcut incase there are no methods incoming
+		if (incomingFunctions.length === 0) {
+			return true;
+		}
 
-		// for (let i = 0; i < incomingFunctions.length; i++) {
-		// 	let result = incomingFunctions[i]();
-		// }
+		let arrayOfResults: boolean[] = [];
 
-		return true;
+		for (let i = 0; i < incomingFunctions.length; i++) {
+			let result = incomingFunctions[i]();
+			arrayOfResults.push(result);
+		}
+
+		return arrayOfResults.every((a) => a === true);
 	}
 
 	static async AsyncEventHandler(
