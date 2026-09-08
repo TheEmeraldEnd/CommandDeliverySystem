@@ -1,4 +1,4 @@
-import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder.ts";
+import { EncoderDecoder } from './EncodingDecoding/EncoderDecoder.ts';
 
 //Methods should default to true or await true if not defined in inherited methods
 export interface IDriverEventInterface {
@@ -60,6 +60,31 @@ export class Driver {
 		incomingFunctions: (() => Promise<boolean>)[],
 		timeInterval: number,
 	): Promise<boolean> {
-		return true;
+		//No function guard
+		if (incomingFunctions.length === 0) {
+			return true;
+		}
+
+		//Setup for timer
+		const timerWithInterval = async () => {
+			await new Promise((resolve) =>
+				setTimeout(
+					() => resolve(console.log('Timer Done')),
+					timeInterval,
+				),
+			);
+			return false;
+		};
+
+		//Should have a race between all settled functions and the timer
+		// TODO: Need to figure out the typing in this promise race.
+		// let result: boolean = await Promise.race([
+		// 	await Promise.allSettled(incomingFunctions),
+		// 	await timerWithInterval,
+		// ]).then((promiseResult) => {
+		// 	if ((typeof promiseResult) === Boolean)
+		// });
+
+		return result;
 	}
 }
