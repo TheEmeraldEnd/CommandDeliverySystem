@@ -60,11 +60,6 @@ export class Driver {
 		incomingFunctions: (() => Promise<boolean>)[],
 		timeIntervalInMilliseconds: number,
 	): Promise<boolean> {
-		//0 functions guard
-		if (incomingFunctions.length === 0) {
-			return true;
-		}
-
 		let startTime: number = new Date().getTime();
 
 		//Gets the time that this should end in milliseconds
@@ -78,34 +73,32 @@ export class Driver {
 					timeIntervalInMilliseconds,
 				),
 			);
-			return false;
+
+			//Return false because this means that the overall event handler failed.
+			return [false];
 		};
 
 		//Setup for function calls
 		const arrayOfFunctionCalls = async () =>
 			await Promise.allSettled(
-				incomingFunctions.map(async (x) => await x()),
-			).then(function (result) {
-				return result.map((m) => m.value);
+				await incomingFunctions.map(async (x) => await x()),
+			).then((promiseResult): boolean[] => {
+				let arrayOfResults: boolean[] = promiseResult.map(
+					(m) => m.value,
+				);
+				return arrayOfResults;
 			});
 
 		//Should have a race between all settled functions and the timer
-		// TODO: Need to figure out the typing in this promise race.
 		let result: boolean = await Promise.race([
-			await arrayOfFunctionCalls(),
-			await timerWithInterval(),
-		]).then((promiseResult) => {
-			//TODO: Need this
-
-			return true;
+			arrayOfFunctionCalls(),
+			timerWithInterval(),
+		]).then((promiseResult: boolean[]) => {
+			return promiseResult.every((e) => e === true);
 		});
 
 		//Backup date guard
 		let endMilliseconds: number = new Date().getTime();
-
-		if (endMilliseconds > projectedEndTime) {
-			return false;
-		}
 
 		//Backup wait for projected time guard
 		if (endMilliseconds < projectedEndTime) {
