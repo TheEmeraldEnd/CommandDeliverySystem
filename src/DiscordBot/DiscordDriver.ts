@@ -14,7 +14,7 @@ import path from "node:path";
 
 export class DiscordDriver implements IDriverEventInterface {
 	StartupMethod(): boolean {
-		dotenv.config({ path: path.resolve("../../Ignore/.env") });
+		dotenv.config({});
 
 		const client = new Client({
 			intents: [
