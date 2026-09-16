@@ -1,4 +1,5 @@
 import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder.ts";
+import { DiscordDriver } from "./DiscordBot/DiscordDriver.ts";
 
 //Methods should default to true or await true if not defined in inherited methods
 export interface IDriverEventInterface {
@@ -24,7 +25,10 @@ export class Driver {
 	}
 
 	static InitializeApp() {
-		this.InterfaceEventClasses = [new EncoderDecoder()];
+		this.InterfaceEventClasses = [
+			new EncoderDecoder(),
+			new DiscordDriver(),
+		];
 	}
 
 	static RunApp() {
