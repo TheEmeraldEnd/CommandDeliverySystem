@@ -9,10 +9,14 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 	Events,
+	SlashCommandBuilder,
+	REST,
+	Routes,
 } from "discord.js";
 import path from "node:path";
 
 export class DiscordDriver implements IDriverEventInterface {
+	//Note client can't be a seperate member for some dam reason
 	StartupMethod(): boolean {
 		dotenv.config({});
 
@@ -26,33 +30,42 @@ export class DiscordDriver implements IDriverEventInterface {
 				GatewayIntentBits.GuildMembers,
 			],
 		});
-		console.log(`Thing: ${process.env.DISCORD_TOKEN}`);
-		//Need to figure out how to get to discord token
-		// client.login(process.env.DISCORD_TOKEN);
 
-		// //Need to test what button builder does
-		// const btn = new ButtonBuilder()
-		// 	.setCustomId("Thing")
-		// 	.setLabel("This is a new thing")
-		// 	.setStyle(ButtonStyle.Premium);
+		client.login(process.env.DISCORD_TOKEN);
+		client.on("clientReady", () => {
+			// let generalChannel = client.channels.cache.get(
+			// 	`${process.env.GENERAL_CHANNEL_TOKEN}`,
+			// );
+
+			// //Ignore this, for some reason it works
+			// DiscordDriver.#SendMessageToGeneral(client).send(
+			// 	`${DiscordDriver.#GetBotName(client)} is ready for service`,
+			// );
+
+			DiscordDriver.#SendMessageToGeneral(
+				client,
+				"",
+				`${DiscordDriver.#GetBotName(client)} is ready for service`,
+			);
+		});
 
 		// client.on(Events.InteractionCreate, async (interaction) => {
-		// 	await interaction.reply({
-		// 		content: "Hello thing",
-		// 		ephemeral: true,
-		// 		components: [btn],
-		// 	});
-		// });
-
-		// client.on("messageCreate", async (message) => {
-		// 	console.log("message");
-
-		// 	if (!message.author.bot)
-		// 		message.channel.send({
-		// 			content: "thing",
+		// 	if (interaction.customID === "Hello") {
+		// 		await interaction.reply({
+		// 			content: "Hello thing",
+		// 			ephemeral: true,
 		// 		});
+		// 	}
 		// });
-		console.log("Discord thing can be reached");
+
+		client.on("messageCreate", async (message) => {
+			if (!message.author.bot)
+				message.channel.send({
+					content: "thing",
+				});
+		});
+
+		console.log("Discord Bot ready");
 
 		return true;
 	}
@@ -67,5 +80,22 @@ export class DiscordDriver implements IDriverEventInterface {
 
 	SuccessMethod(): boolean {
 		return true;
+	}
+
+	static #GetBotName(incomingClient: Client<boolean>): string {
+		return `${incomingClient.user?.displayName}`;
+	}
+
+	static #SendMessageToGeneral(
+		incomingClient: Client<boolean>,
+		channelToken: string = "",
+		message: string = "",
+	) {
+		let generalChannel = incomingClient.channels.cache.get(
+			`${channelToken}`,
+		);
+		if (generalChannel !== undefined) {
+			generalChannel.send(message);
+		}
 	}
 }
