@@ -13,7 +13,9 @@ import {
 	REST,
 	Routes,
 } from "discord.js";
+
 import path from "node:path";
+import { messageCreateCommands } from "./Commands/MessageCreateCommands.ts";
 
 export class DiscordDriver implements IDriverEventInterface {
 	//Note client can't be a seperate member for some dam reason
@@ -44,7 +46,7 @@ export class DiscordDriver implements IDriverEventInterface {
 
 			DiscordDriver.#SendMessageToGeneral(
 				client,
-				"",
+				`${process.env.GENERAL_CHANNEL_TOKEN}`,
 				`${DiscordDriver.#GetBotName(client)} is ready for service`,
 			);
 		});
@@ -59,10 +61,22 @@ export class DiscordDriver implements IDriverEventInterface {
 		// });
 
 		client.on("messageCreate", async (message) => {
-			if (!message.author.bot)
-				message.channel.send({
-					content: "thing",
-				});
+			if (message.author.bot) {
+				return;
+			}
+
+			let messageID: string =
+				message.content.match(/^([\w\-]+)/)?.[0] ?? "";
+
+			messageCreateCommands.forEach(async (messageCreateCommand) => {
+				if (
+					messageCreateCommand.callbackID.toUpperCase() ===
+					messageID.toUpperCase()
+				) {
+					console.log(messageCreateCommand.name + " is activated");
+					await messageCreateCommand.CallBackFunction(message);
+				}
+			});
 		});
 
 		console.log("Discord Bot ready");
