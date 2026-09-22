@@ -1,5 +1,5 @@
-import { type IDriverEventInterface } from "../Driver.ts";
-import dotenv from "dotenv";
+import { type IDriverEventInterface } from '../Driver.ts';
+import dotenv from 'dotenv';
 import {
 	Client,
 	GatewayIntentBits,
@@ -12,10 +12,10 @@ import {
 	SlashCommandBuilder,
 	REST,
 	Routes,
-} from "discord.js";
+} from 'discord.js';
 
-import path from "node:path";
-import { messageCreateCommands } from "./Commands/MessageCreateCommands.ts";
+import path from 'node:path';
+import { messageCreateCommands } from './Commands/MessageCreateCommands.ts';
 
 export class DiscordDriver implements IDriverEventInterface {
 	//Note client can't be a seperate member for some dam reason
@@ -34,7 +34,7 @@ export class DiscordDriver implements IDriverEventInterface {
 		});
 
 		client.login(process.env.DISCORD_TOKEN);
-		client.on("clientReady", () => {
+		client.on('clientReady', () => {
 			// let generalChannel = client.channels.cache.get(
 			// 	`${process.env.GENERAL_CHANNEL_TOKEN}`,
 			// );
@@ -60,26 +60,32 @@ export class DiscordDriver implements IDriverEventInterface {
 		// 	}
 		// });
 
-		client.on("messageCreate", async (message) => {
+		client.on('messageCreate', async (message) => {
 			if (message.author.bot) {
 				return;
 			}
 
 			let messageID: string =
-				message.content.match(/^([\w\-]+)/)?.[0] ?? "";
+				message.content.match(/^([\w\-]+)/)?.[0] ?? '';
+
+			let hasCommandFired: boolean = false;
 
 			messageCreateCommands.forEach(async (messageCreateCommand) => {
 				if (
 					messageCreateCommand.callbackID.toUpperCase() ===
 					messageID.toUpperCase()
 				) {
-					console.log(messageCreateCommand.name + " is activated");
+					console.log(messageCreateCommand.name + ' is activated');
+					hasCommandFired = true;
 					await messageCreateCommand.CallBackFunction(message);
 				}
 			});
+
+			if (!hasCommandFired)
+				message.channel.send(DiscordDriver.#GetMessageError());
 		});
 
-		console.log("Discord Bot ready");
+		console.log('Discord Bot ready');
 
 		return true;
 	}
@@ -102,8 +108,8 @@ export class DiscordDriver implements IDriverEventInterface {
 
 	static #SendMessageToGeneral(
 		incomingClient: Client<boolean>,
-		channelToken: string = "",
-		message: string = "",
+		channelToken: string = '',
+		message: string = '',
 	) {
 		let generalChannel = incomingClient.channels.cache.get(
 			`${channelToken}`,
@@ -111,5 +117,9 @@ export class DiscordDriver implements IDriverEventInterface {
 		if (generalChannel !== undefined) {
 			generalChannel.send(message);
 		}
+	}
+
+	static #GetMessageError(): string {
+		return 'No command like that has existed. Type help for more information.';
 	}
 }
