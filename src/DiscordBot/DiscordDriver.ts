@@ -40,15 +40,21 @@ export class DiscordDriver implements IDriverEventInterface {
 			let messageID: string =
 				message.content.match(/^([\w\-]+)/)?.[0] ?? "";
 
+			let hasCommandFired: boolean = false;
+
 			messageCreateCommands.forEach(async (messageCreateCommand) => {
 				if (
 					messageCreateCommand.callbackID.toUpperCase() ===
 					messageID.toUpperCase()
 				) {
 					console.log(messageCreateCommand.name + " is activated");
+					hasCommandFired = true;
 					await messageCreateCommand.CallBackFunction(message);
 				}
 			});
+
+			if (!hasCommandFired)
+				message.channel.send(DiscordDriver.#GetMessageError());
 		});
 
 		console.log("Discord Bot ready");
@@ -106,5 +112,9 @@ export class DiscordDriver implements IDriverEventInterface {
 			//! Doesn't cause problems. Send is a general channel method
 			generalChannel.send(message);
 		}
+	}
+
+	static #GetMessageError(): string {
+		return "No command like that has existed. Type help for more information.";
 	}
 }
