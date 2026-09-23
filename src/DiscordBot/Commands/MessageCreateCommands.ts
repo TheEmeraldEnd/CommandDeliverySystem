@@ -1,8 +1,9 @@
 import { Message, type OmitPartialGroupDMChannel } from 'discord.js';
+import { GlobalBridge } from '../../GlobalBridge.ts';
 
 export interface IMessageCreateCommand {
 	name: string;
-	//Must be all in one word
+	//Must be one word
 	callbackID: string;
 	regexArgumentHandler?: RegExp;
 	description: string;
@@ -54,8 +55,9 @@ export const messageCreateCommands: IMessageCreateCommand[] = [
 				incomingMessage.content.match(this.regexArgumentHandler)?.[0] ??
 				'';
 
-			//TODO: Need to make this send through to the message sorter when built.
-			await incomingMessage.channel.send(argument);
+			argument = argument.trim();
+
+			GlobalBridge.RecieveNotification(argument);
 		}
 	})(),
 ];
