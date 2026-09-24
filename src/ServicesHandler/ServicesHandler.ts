@@ -1,5 +1,6 @@
-import { type IDriverEventInterface } from '../Driver.ts';
-import express from 'express';
+import { type IDriverEventInterface } from "../Driver.ts";
+import express from "express";
+import { GlobalBridge } from "../GlobalBridge.ts";
 
 //Continue on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
 export class ServicesHandler implements IDriverEventInterface {
@@ -14,9 +15,25 @@ export class ServicesHandler implements IDriverEventInterface {
 			);
 		});
 
-		ServicesHandler.app.get('/test', (req, res) => {
-			res.status(200).send({ Test: 'Successful' });
+		ServicesHandler.app.get("/test", (req, res) => {
+			res.status(200).send({ Test: "Successful" });
 		});
+
+		ServicesHandler.app.post("/testPost/:id", (req, res) => {
+			const { id } = req.params;
+			const { logo } = req.body;
+
+			if (!logo) {
+				res.status(418).send({ message: "Please send a logo" });
+			}
+
+			res.send({ tshirt: `logo ${logo} id ${id}` });
+
+			GlobalBridge.SendNotification(`${logo}`);
+		});
+
+		//TODO: Remove later
+		fetch("http://localhost:2000/testPost:id");
 
 		return true;
 	}
