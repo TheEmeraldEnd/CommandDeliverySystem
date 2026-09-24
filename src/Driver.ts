@@ -1,5 +1,6 @@
-import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder.ts";
-import { DiscordDriver } from "./DiscordBot/DiscordDriver.ts";
+import { EncoderDecoder } from './EncodingDecoding/EncoderDecoder.ts';
+import { DiscordDriver } from './DiscordBot/DiscordDriver.ts';
+import { ServicesHandler } from './ServicesHandler/ServicesHandler.ts';
 
 //Methods should default to true or await true if not defined in inherited methods
 export interface IDriverEventInterface {
@@ -28,6 +29,7 @@ export class Driver {
 		this.InterfaceEventClasses = [
 			new EncoderDecoder(),
 			new DiscordDriver(),
+			new ServicesHandler(),
 		];
 	}
 
@@ -73,7 +75,7 @@ export class Driver {
 		const timerWithInterval = async () => {
 			await new Promise((resolve) =>
 				setTimeout(
-					() => resolve(console.log("Timer Done")),
+					() => resolve(console.log('Timer Done')),
 					timeIntervalInMilliseconds,
 				),
 			);
