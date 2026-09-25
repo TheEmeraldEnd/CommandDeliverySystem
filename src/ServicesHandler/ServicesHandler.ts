@@ -68,4 +68,31 @@ export class ServicesHandler implements IDriverEventInterface {
 	FailureMethod(): boolean {
 		return true;
 	}
+
+	async PingAllAcceptablePorts() {
+		ServicesHandler.pingPortRangeInclusive =
+			ServicesHandler.pingPortRangeInclusive.sort();
+
+		let portUpperRange: number = ServicesHandler.pingPortRangeInclusive[1];
+		let portLowerRange: number = ServicesHandler.pingPortRangeInclusive[0];
+
+		let portsLength: number = Math.abs(portUpperRange - portLowerRange);
+
+		let ports: number[] = [];
+
+		for (let i = 0; i < portsLength; i++) {
+			ports.push(portLowerRange + i);
+		}
+		ports.push(portUpperRange);
+
+		let fetchMethods: (() => Promise<Response>)[] = [];
+
+		for (let i = 0; i < ports.length; i++) {
+			fetchMethods.push(async () => {
+				return await fetch(`http://localhost:${ports[i]}`);
+			});
+		}
+
+		return await Promise.allSettled(fetchMethods);
+	}
 }
