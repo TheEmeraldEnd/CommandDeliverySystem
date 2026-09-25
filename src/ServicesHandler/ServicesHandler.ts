@@ -9,6 +9,8 @@ export class ServicesHandler implements IDriverEventInterface {
 	static app = express();
 
 	StartupMethod(): boolean {
+		ServicesHandler.app.use(express.json());
+
 		ServicesHandler.app.listen(ServicesHandler.notificationPort, () => {
 			console.log(
 				`Notification listening is on in http://localhost:${ServicesHandler.notificationPort}`,
@@ -32,8 +34,26 @@ export class ServicesHandler implements IDriverEventInterface {
 			GlobalBridge.SendNotification(`${logo}`);
 		});
 
-		//TODO: Remove later
-		fetch("http://localhost:2000/testPost:id");
+		ServicesHandler.app.post("/Notification", (req, res) => {
+			let notificationFound = "";
+			console.log(`req.body = ${req.body}`);
+			try {
+				const { notification } = req.body;
+				notificationFound = notification;
+			} catch (error) {
+				console.log(error);
+				res.status(400).send({
+					error: "JSON not correct",
+					message:
+						"Json should only be {notification, 'string'} to be passed in.",
+				});
+				return;
+			}
+
+			GlobalBridge.SendNotification(`${notificationFound}`);
+			res.send(200).send({ success: true });
+			return;
+		});
 
 		return true;
 	}
