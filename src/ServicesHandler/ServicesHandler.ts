@@ -36,7 +36,6 @@ export class ServicesHandler implements IDriverEventInterface {
 
 		ServicesHandler.app.post("/Notification", (req, res) => {
 			let notificationFound = "";
-			console.log(`req.body = ${req.body}`);
 			try {
 				const { notification } = req.body;
 				notificationFound = notification;
