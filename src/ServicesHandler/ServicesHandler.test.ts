@@ -1,5 +1,9 @@
 import { expect, describe, test } from "vitest";
+import { ServicesHandler } from "./ServicesHandler";
 
-describe("Ping Scout/Ping Range Tests", () => {});
-describe("Sending commands to services tests", () => {});
-describe("Recieving notifications tests", () => {});
+describe("Testing ServicesHandler's socket capabilities", () => {
+	test("Just testing things for now", () => {
+		console.log("thing");
+		expect(true).toBe(true);
+	});
+});

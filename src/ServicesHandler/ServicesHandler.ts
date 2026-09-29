@@ -1,58 +1,89 @@
 import { type IDriverEventInterface } from "../Driver.ts";
 import express from "express";
 import { GlobalBridge } from "../GlobalBridge.ts";
+import { Server } from "socket.io";
+import { createServer } from "node:http";
 
 //Continue on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
+//Socket.io tutorial on https://www.youtube.com/watch?v=1BfCnjr_Vjg&t=305s
 export class ServicesHandler implements IDriverEventInterface {
 	static pingPortRangeInclusive: [number, number] = [2001, 2100];
 	static notificationPort: number = 2000;
-	static app = express();
+	static expressApp = express();
 
 	StartupMethod(): boolean {
-		ServicesHandler.app.use(express.json());
+		const server = createServer(express);
+		const io: Server = new Server().listen(server, {
+			cors: { origin: "*" },
+		});
 
-		ServicesHandler.app.listen(ServicesHandler.notificationPort, () => {
+		io.on("connection", (socket) => {
+			console.log("A user is connected");
+
+			socket.on("message", (message) => {
+				console.log(message);
+				io.emit(
+					"message",
+					`${socket.id.substring(0, 2)} said ${message}`,
+				);
+			});
+		});
+
+		server.listen(ServicesHandler.notificationPort, () => {
 			console.log(
-				`Notification listening is on in http://localhost:${ServicesHandler.notificationPort}`,
+				`Listening on notification port http://localhost:${ServicesHandler.notificationPort}`,
 			);
 		});
 
-		ServicesHandler.app.get("/test", (req, res) => {
-			res.status(200).send({ Test: "Successful" });
-		});
+		//#region Express only portion
+		// ServicesHandler.expressApp.use(express.json());
 
-		ServicesHandler.app.post("/testPost/:id", (req, res) => {
-			const { id } = req.params;
-			const { logo } = req.body;
+		// ServicesHandler.expressApp.listen(
+		// 	ServicesHandler.notificationPort,
+		// 	() => {
+		// 		console.log(
+		// 			`Notification listening is on in http://localhost:${ServicesHandler.notificationPort}`,
+		// 		);
+		// 	},
+		// );
 
-			if (!logo) {
-				res.status(418).send({ message: "Please send a logo" });
-			}
+		// ServicesHandler.expressApp.get("/test", (req, res) => {
+		// 	res.status(200).send({ Test: "Successful" });
+		// });
 
-			res.send({ tshirt: `logo ${logo} id ${id}` });
+		// ServicesHandler.expressApp.post("/testPost/:id", (req, res) => {
+		// 	const { id } = req.params;
+		// 	const { logo } = req.body;
 
-			GlobalBridge.SendNotification(`${logo}`);
-		});
+		// 	if (!logo) {
+		// 		res.status(418).send({ message: "Please send a logo" });
+		// 	}
 
-		ServicesHandler.app.post("/Notification", (req, res) => {
-			let notificationFound = "";
-			try {
-				const { notification } = req.body;
-				notificationFound = notification;
-			} catch (error) {
-				console.log(error);
-				res.status(400).send({
-					error: "JSON not correct",
-					message:
-						"Json should only be {notification, 'string'} to be passed in.",
-				});
-				return;
-			}
+		// 	res.send({ tshirt: `logo ${logo} id ${id}` });
 
-			GlobalBridge.SendNotification(`${notificationFound}`);
-			res.send(200).send({ success: true });
-			return;
-		});
+		// 	GlobalBridge.SendNotification(`${logo}`);
+		// });
+
+		// ServicesHandler.expressApp.post("/Notification", (req, res) => {
+		// 	let notificationFound = "";
+		// 	try {
+		// 		const { notification } = req.body;
+		// 		notificationFound = notification;
+		// 	} catch (error) {
+		// 		console.log(error);
+		// 		res.status(400).send({
+		// 			error: "JSON not correct",
+		// 			message:
+		// 				"Json should only be {notification, 'string'} to be passed in.",
+		// 		});
+		// 		return;
+		// 	}
+
+		// 	GlobalBridge.SendNotification(`${notificationFound}`);
+		// 	res.send(200).send({ success: true });
+		// 	return;
+		// });
+		//#endregion
 
 		return true;
 	}
@@ -69,30 +100,30 @@ export class ServicesHandler implements IDriverEventInterface {
 		return true;
 	}
 
-	async PingAllAcceptablePorts() {
-		ServicesHandler.pingPortRangeInclusive =
-			ServicesHandler.pingPortRangeInclusive.sort();
+	// async PingAllAcceptablePorts() {
+	// 	ServicesHandler.pingPortRangeInclusive =
+	// 		ServicesHandler.pingPortRangeInclusive.sort();
 
-		let portUpperRange: number = ServicesHandler.pingPortRangeInclusive[1];
-		let portLowerRange: number = ServicesHandler.pingPortRangeInclusive[0];
+	// 	let portUpperRange: number = ServicesHandler.pingPortRangeInclusive[1];
+	// 	let portLowerRange: number = ServicesHandler.pingPortRangeInclusive[0];
 
-		let portsLength: number = Math.abs(portUpperRange - portLowerRange);
+	// 	let portsLength: number = Math.abs(portUpperRange - portLowerRange);
 
-		let ports: number[] = [];
+	// 	let ports: number[] = [];
 
-		for (let i = 0; i < portsLength; i++) {
-			ports.push(portLowerRange + i);
-		}
-		ports.push(portUpperRange);
+	// 	for (let i = 0; i < portsLength; i++) {
+	// 		ports.push(portLowerRange + i);
+	// 	}
+	// 	ports.push(portUpperRange);
 
-		let fetchMethods: (() => Promise<Response>)[] = [];
+	// 	let fetchMethods: (() => Promise<Response>)[] = [];
 
-		for (let i = 0; i < ports.length; i++) {
-			fetchMethods.push(async () => {
-				return await fetch(`http://localhost:${ports[i]}`);
-			});
-		}
+	// 	for (let i = 0; i < ports.length; i++) {
+	// 		fetchMethods.push(async () => {
+	// 			return await fetch(`http://localhost:${ports[i]}`);
+	// 		});
+	// 	}
 
-		return await Promise.allSettled(fetchMethods);
-	}
+	// 	return await Promise.allSettled(fetchMethods);
+	// }
 }
