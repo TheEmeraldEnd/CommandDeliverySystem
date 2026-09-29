@@ -11,9 +11,13 @@ export class ServicesHandler implements IDriverEventInterface {
 	static notificationPort: number = 2000;
 	static expressApp = express();
 
+	//Has to be any type since the actual type requires alot of brackets.
+	static server: any;
+	static io: Server;
+
 	StartupMethod(): boolean {
-		const server = createServer(express);
-		const io: Server = new Server().listen(server, {
+		ServicesHandler.server = createServer(express);
+		const io: Server = new Server().listen(ServicesHandler.server, {
 			cors: { origin: "*" },
 		});
 
@@ -29,7 +33,7 @@ export class ServicesHandler implements IDriverEventInterface {
 			});
 		});
 
-		server.listen(ServicesHandler.notificationPort, () => {
+		ServicesHandler.server.listen(ServicesHandler.notificationPort, () => {
 			console.log(
 				`Listening on notification port http://localhost:${ServicesHandler.notificationPort}`,
 			);
@@ -93,6 +97,8 @@ export class ServicesHandler implements IDriverEventInterface {
 	}
 
 	SuccessMethod(): boolean {
+		ServicesHandler.io.close();
+		ServicesHandler.server.close();
 		return true;
 	}
 
