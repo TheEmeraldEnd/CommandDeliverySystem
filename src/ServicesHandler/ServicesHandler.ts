@@ -1,14 +1,14 @@
-import { type IDriverEventInterface } from "../Driver.ts";
-import express from "express";
-import { GlobalBridge } from "../GlobalBridge.ts";
-import { Server } from "socket.io";
-import { createServer } from "node:http";
+import { type IDriverEventInterface } from '../Driver.ts';
+import express from 'express';
+import { GlobalBridge } from '../GlobalBridge.ts';
+import { Server } from 'socket.io';
+import { createServer } from 'node:http';
 
 //Continue on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
 //Socket.io tutorial on https://www.youtube.com/watch?v=1BfCnjr_Vjg&t=305s
 export class ServicesHandler implements IDriverEventInterface {
 	static pingPortRangeInclusive: [number, number] = [2001, 2100];
-	static notificationPort: number = 2000;
+	static notificationPort: number = 8080;
 	static expressApp = express();
 
 	//Has to be any type since the actual type requires alot of brackets.
@@ -17,17 +17,17 @@ export class ServicesHandler implements IDriverEventInterface {
 
 	StartupMethod(): boolean {
 		ServicesHandler.server = createServer(express);
-		const io: Server = new Server().listen(ServicesHandler.server, {
-			cors: { origin: "*" },
+		ServicesHandler.io = new Server().listen(ServicesHandler.server, {
+			cors: { origin: '*' },
 		});
 
-		io.on("connection", (socket) => {
-			console.log("A user is connected");
+		ServicesHandler.io.on('connection', (socket) => {
+			console.log('A user is connected');
 
-			socket.on("message", (message) => {
+			socket.on('message', (message) => {
 				console.log(message);
-				io.emit(
-					"message",
+				ServicesHandler.io.emit(
+					'message',
 					`${socket.id.substring(0, 2)} said ${message}`,
 				);
 			});
@@ -38,6 +38,8 @@ export class ServicesHandler implements IDriverEventInterface {
 				`Listening on notification port http://localhost:${ServicesHandler.notificationPort}`,
 			);
 		});
+
+		ServicesHandler.io;
 
 		//#region Express only portion
 		// ServicesHandler.expressApp.use(express.json());
@@ -97,8 +99,8 @@ export class ServicesHandler implements IDriverEventInterface {
 	}
 
 	SuccessMethod(): boolean {
-		ServicesHandler.io.close();
-		ServicesHandler.server.close();
+		//ServicesHandler.io.close();
+		//ServicesHandler.server.close();
 		return true;
 	}
 
