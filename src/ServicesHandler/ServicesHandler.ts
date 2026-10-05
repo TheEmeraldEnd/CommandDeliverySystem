@@ -39,8 +39,6 @@ export class ServicesHandler implements IDriverEventInterface {
 			);
 		});
 
-		ServicesHandler.io;
-
 		//#region Express only portion
 		// ServicesHandler.expressApp.use(express.json());
 

@@ -1,7 +1,7 @@
-import { Driver } from "./Driver.ts";
+import { Driver } from './Driver.ts';
 
 Driver.InitializeApp();
 
 Driver.RunApp();
 
-console.log("Application Run Complete!!");
+console.log('Application Run Complete!!');
