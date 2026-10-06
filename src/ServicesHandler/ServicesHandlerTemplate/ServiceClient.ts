@@ -23,6 +23,10 @@ export class ServiceClient {
 		this.socket.on("discordNotificationResponse", (res: string) => {
 			log(this.serviceName, res);
 		});
+
+		this.socket.on("getInfo", () => {
+			this.socket.emit("infoReciever", this.serviceName);
+		});
 	}
 
 	IsConnected(): boolean {

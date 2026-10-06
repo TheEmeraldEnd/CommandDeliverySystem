@@ -4,6 +4,7 @@ import { GlobalBridge } from "../GlobalBridge.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import { log } from "../LoggingMethods.ts";
+import { type socketInfo } from "./ServicesHandler.types.ts";
 
 //Continue on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
 //Socket.io tutorial on https://www.youtube.com/watch?v=1BfCnjr_Vjg&t=305s
@@ -16,11 +17,16 @@ export class ServicesHandler implements IDriverEventInterface {
 	static server: any;
 	static io: Server;
 
+	//Socket info
+	static socketsInfo: socketInfo[] = [];
+
 	StartupMethod(): boolean {
 		ServicesHandler.server = createServer(express);
 		ServicesHandler.io = new Server().listen(ServicesHandler.server, {
 			cors: { origin: "*" },
 		});
+
+		ServicesHandler.ClearSocketsInfo();
 
 		ServicesHandler.io.on("connection", (socket) => {
 			console.log("A user is connected");
@@ -42,6 +48,13 @@ export class ServicesHandler implements IDriverEventInterface {
 					);
 				},
 			);
+
+			socket.on("infoReciever", (incomingServiceName: string) => {
+				ServicesHandler.socketsInfo.push({
+					socketID: socket.id,
+					serviceName: incomingServiceName,
+				});
+			});
 		});
 
 		ServicesHandler.server.listen(ServicesHandler.notificationPort, () => {
@@ -73,5 +86,14 @@ export class ServicesHandler implements IDriverEventInterface {
 			`${this.name}: recieved command "${incomingCommandAndString}"`,
 		);
 		//TODO: Needs to send the command to the specified service and a case for service not specified
+	}
+
+	static RequestInfoOfAllSockets() {
+		this.ClearSocketsInfo();
+		ServicesHandler.io.emit("getInfo");
+	}
+
+	static ClearSocketsInfo() {
+		this.socketsInfo = [];
 	}
 }
