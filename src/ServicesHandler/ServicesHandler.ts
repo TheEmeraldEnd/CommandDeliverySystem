@@ -4,12 +4,11 @@ import { GlobalBridge } from "../GlobalBridge.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import { log } from "../LoggingMethods.ts";
-import { type socketInfo } from "./ServicesHandler.types.ts";
+import { type SocketInfo } from "./ServicesHandler.types.ts";
 
 //Continue on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
 //Socket.io tutorial on https://www.youtube.com/watch?v=1BfCnjr_Vjg&t=305s
 export class ServicesHandler implements IDriverEventInterface {
-	static pingPortRangeInclusive: [number, number] = [2001, 2100];
 	static notificationPort: number = 8080;
 	static expressApp = express();
 
@@ -18,7 +17,7 @@ export class ServicesHandler implements IDriverEventInterface {
 	static io: Server;
 
 	//Socket info
-	static socketsInfo: socketInfo[] = [];
+	static socketsInfo: SocketInfo[] = [];
 
 	StartupMethod(): boolean {
 		ServicesHandler.server = createServer(express);
@@ -26,7 +25,8 @@ export class ServicesHandler implements IDriverEventInterface {
 			cors: { origin: "*" },
 		});
 
-		ServicesHandler.ClearSocketsInfo();
+		let isServerListeningSuccessful = false;
+		let isIOListeningSuccessful = false;
 
 		ServicesHandler.io.on("connection", (socket) => {
 			console.log("A user is connected");
@@ -40,8 +40,10 @@ export class ServicesHandler implements IDriverEventInterface {
 
 			socket.on(
 				"discordNotification",
-				(name: string, notification: string) => {
-					GlobalBridge.SendNotification(`${name}: ${notification}`);
+				(incomingName: string, notification: string) => {
+					GlobalBridge.SendNotification(
+						`${incomingName}: ${notification}`,
+					);
 					socket.emit(
 						"discordNotificationResponse",
 						"ServicesHandler server recieved notification successfully.",
@@ -50,23 +52,35 @@ export class ServicesHandler implements IDriverEventInterface {
 			);
 
 			socket.on("infoReciever", (incomingServiceName: string) => {
-				ServicesHandler.socketsInfo.push({
+				let newSocketInfo: SocketInfo = {
 					socketID: socket.id,
 					serviceName: incomingServiceName,
-				});
+				};
+				ServicesHandler.socketsInfo.push(newSocketInfo);
 			});
+
+			isIOListeningSuccessful = true;
 		});
 
 		ServicesHandler.server.listen(ServicesHandler.notificationPort, () => {
 			console.log(
 				`Listening on notification port http://localhost:${ServicesHandler.notificationPort}`,
 			);
+			isServerListeningSuccessful = true;
 		});
 
-		return true;
+		return isServerListeningSuccessful && isIOListeningSuccessful;
 	}
 
 	async HeartbeatMethod(): Promise<boolean> {
+		try {
+			ServicesHandler.ClearAndRequestInfoOfAllSockets();
+		} catch (error) {
+			console.log(`ServicesHandler: ${error}`);
+			return false;
+		}
+
+		console.log(ServicesHandler.socketsInfo);
 		return true;
 	}
 
@@ -85,15 +99,40 @@ export class ServicesHandler implements IDriverEventInterface {
 		GlobalBridge.SendNotification(
 			`${this.name}: recieved command "${incomingCommandAndString}"`,
 		);
-		//TODO: Needs to send the command to the specified service and a case for service not specified
+
+		let intendedService: string = (
+			incomingCommandAndString.match(/^([\w\-]+)/)?.[0] ?? ""
+		).trim();
+
+		let messageContent: string = (
+			incomingCommandAndString.match(/\s(.*)/)?.[0] ?? ""
+		).trim();
+
+		//Sort through the available services
+		let selectedSocketInfo: SocketInfo = { socketID: "", serviceName: "" };
+		for (let i = 0; i < this.socketsInfo.length; i++) {
+			if (
+				this.socketsInfo[i].serviceName.toLowerCase() ===
+				intendedService.toLocaleLowerCase()
+			) {
+				selectedSocketInfo = this.socketsInfo[i];
+			}
+		}
+
+		if (
+			!(
+				selectedSocketInfo.socketID === "" ||
+				selectedSocketInfo.socketID === undefined
+			)
+		) {
+			this.io
+				.to(selectedSocketInfo.socketID)
+				.emit("commandDelivery", messageContent);
+		}
 	}
 
-	static RequestInfoOfAllSockets() {
-		this.ClearSocketsInfo();
-		ServicesHandler.io.emit("getInfo");
-	}
-
-	static ClearSocketsInfo() {
+	static ClearAndRequestInfoOfAllSockets() {
 		this.socketsInfo = [];
+		ServicesHandler.io.emit("getInfo");
 	}
 }

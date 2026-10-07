@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { log, warn, error } from "./ServiceClientConsole.ts";
+import { IncomingMessage } from "node:http";
 
 export class ServiceClient {
 	socket: Socket;
@@ -26,6 +27,10 @@ export class ServiceClient {
 
 		this.socket.on("getInfo", () => {
 			this.socket.emit("infoReciever", this.serviceName);
+		});
+
+		this.socket.on("commandDelivery", (IncomingMessage: string) => {
+			this.SendNotification(`Recieved ${IncomingMessage}`);
 		});
 	}
 

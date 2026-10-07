@@ -1,6 +1,6 @@
-import { EncoderDecoder } from './EncodingDecoding/EncoderDecoder.ts';
-import { DiscordDriver } from './DiscordBot/DiscordDriver.ts';
-import { ServicesHandler } from './ServicesHandler/ServicesHandler.ts';
+import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder.ts";
+import { DiscordDriver } from "./DiscordBot/DiscordDriver.ts";
+import { ServicesHandler } from "./ServicesHandler/ServicesHandler.ts";
 
 //Methods should default to true or await true if not defined in inherited methods
 export interface IDriverEventInterface {
@@ -33,13 +33,26 @@ export class Driver {
 		];
 	}
 
-	static RunApp() {
+	static async RunApp() {
 		//Start the events
 		let isStartSuccessful = this.SyncEventHandler(
 			this.InterfaceEventClasses.map((i) => i.StartupMethod),
 		);
 
 		//Run the heartbeats
+		if (isStartSuccessful) {
+			let isHeartbeatRunSuccessful: boolean = true;
+
+			while (isHeartbeatRunSuccessful) {
+				isHeartbeatRunSuccessful = await this.AsyncEventHandler(
+					this.InterfaceEventClasses.map((i) => i.HeartbeatMethod),
+					2000,
+				);
+				//TODO: heartbeat not being reached
+				console.log("thing");
+				isHeartbeatRunSuccessful;
+			}
+		}
 
 		//Put the final run
 
@@ -75,7 +88,7 @@ export class Driver {
 		const timerWithInterval = async () => {
 			await new Promise((resolve) =>
 				setTimeout(
-					() => resolve(console.log('Timer Done')),
+					() => resolve(console.log("Timer Done")),
 					timeIntervalInMilliseconds,
 				),
 			);

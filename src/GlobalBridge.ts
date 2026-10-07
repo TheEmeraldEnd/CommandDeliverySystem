@@ -15,7 +15,6 @@ export class GlobalBridge {
 			return;
 		}
 
-		//TODO: Eventually send to MessageSorter
 		ServicesHandler.SendCommandMessage(messageString);
 	}
 }

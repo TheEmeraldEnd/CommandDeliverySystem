@@ -11,9 +11,8 @@ console.log("Application Run Complete!!");
 let messageToSend = "This is a test message";
 
 let client = new ServiceClient();
+let client2 = new ServiceClient(8080, "client2");
 
 setTimeout(() => {
-	ServicesHandler.RequestInfoOfAllSockets();
-
-	console.log(ServicesHandler.socketsInfo);
+	ServicesHandler.ClearAndRequestInfoOfAllSockets();
 }, 4000);
