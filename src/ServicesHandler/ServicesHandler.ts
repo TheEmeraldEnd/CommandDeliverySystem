@@ -26,7 +26,6 @@ export class ServicesHandler implements IDriverEventInterface {
 		});
 
 		let isServerListeningSuccessful = false;
-		let isIOListeningSuccessful = false;
 
 		ServicesHandler.io.on("connection", (socket) => {
 			console.log("A user is connected");
@@ -58,8 +57,6 @@ export class ServicesHandler implements IDriverEventInterface {
 				};
 				ServicesHandler.socketsInfo.push(newSocketInfo);
 			});
-
-			isIOListeningSuccessful = true;
 		});
 
 		ServicesHandler.server.listen(ServicesHandler.notificationPort, () => {
@@ -69,7 +66,7 @@ export class ServicesHandler implements IDriverEventInterface {
 			isServerListeningSuccessful = true;
 		});
 
-		return isServerListeningSuccessful && isIOListeningSuccessful;
+		return isServerListeningSuccessful;
 	}
 
 	async HeartbeatMethod(): Promise<boolean> {
@@ -79,9 +76,7 @@ export class ServicesHandler implements IDriverEventInterface {
 			console.log(`ServicesHandler: ${error}`);
 			return false;
 		}
-
-		console.log(ServicesHandler.socketsInfo);
-		return true;
+		return false;
 	}
 
 	SuccessMethod(): boolean {
