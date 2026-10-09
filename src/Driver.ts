@@ -40,23 +40,25 @@ export class Driver {
 		);
 
 		//Run the heartbeats
+		let isHeartbeatRunSuccessful: boolean = true;
 		if (isStartSuccessful) {
-			let isHeartbeatRunSuccessful: boolean = true;
-
 			while (isHeartbeatRunSuccessful) {
 				isHeartbeatRunSuccessful = await this.AsyncEventHandler(
 					this.InterfaceEventClasses.map((i) => i.HeartbeatMethod),
 					2000,
 				);
-				//TODO: heartbeat not being reached
-				console.log("thing");
-				isHeartbeatRunSuccessful;
 			}
 		}
 
 		//Put the final run
 
 		//In case of failure
+
+		if (!isStartSuccessful || !isHeartbeatRunSuccessful) {
+			this.SyncEventHandler(
+				this.InterfaceEventClasses.map((i) => i.FailureMethod),
+			);
+		}
 	}
 
 	static SyncEventHandler(incomingFunctions: (() => boolean)[]): boolean {
@@ -87,10 +89,7 @@ export class Driver {
 		//Setup for timer
 		const timerWithInterval = async () => {
 			await new Promise((resolve) =>
-				setTimeout(
-					() => resolve(console.log("Timer Done")),
-					timeIntervalInMilliseconds,
-				),
+				setTimeout(() => {}, timeIntervalInMilliseconds),
 			);
 
 			//Return false because this means that the overall event handler failed.

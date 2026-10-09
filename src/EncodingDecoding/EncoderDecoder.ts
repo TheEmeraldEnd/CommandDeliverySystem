@@ -31,18 +31,18 @@ export class EncoderDecoder implements IDriverEventInterface {
 	}
 
 	StartupMethod(): boolean {
-		return false;
+		return true;
 	}
 
 	async HeartbeatMethod(): Promise<boolean> {
-		return await false;
+		return await true;
 	}
 
 	FailureMethod(): boolean {
-		return false;
+		return true;
 	}
 
 	SuccessMethod(): boolean {
-		return false;
+		return true;
 	}
 }

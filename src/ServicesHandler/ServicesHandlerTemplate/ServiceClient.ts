@@ -12,8 +12,8 @@ export class ServiceClient {
 
 		this.socket.on("connection_error", (err) => {
 			error(this.serviceName, err.message);
-			// error(this.name, err.description);
-			// error(this.name, err.context);
+			error(this.serviceName, err.description);
+			error(this.serviceName, err.context);
 		});
 
 		this.socket.on("connect", () => {

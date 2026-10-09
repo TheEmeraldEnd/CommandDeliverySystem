@@ -63,8 +63,9 @@ export class ServicesHandler implements IDriverEventInterface {
 			console.log(
 				`Listening on notification port http://localhost:${ServicesHandler.notificationPort}`,
 			);
-			isServerListeningSuccessful = true;
 		});
+
+		isServerListeningSuccessful = true;
 
 		return isServerListeningSuccessful;
 	}
@@ -76,7 +77,7 @@ export class ServicesHandler implements IDriverEventInterface {
 			console.log(`ServicesHandler: ${error}`);
 			return false;
 		}
-		return false;
+		return true;
 	}
 
 	SuccessMethod(): boolean {
