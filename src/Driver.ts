@@ -18,9 +18,8 @@ export interface IDriverEventInterface {
 }
 
 export class Driver {
-	//Delete the class
 	static InterfaceEventClasses: IDriverEventInterface[];
-
+	static heartbeatIntervalInMilliseconds: number = 2000;
 	constructor() {
 		Driver.InitializeApp();
 	}
@@ -45,15 +44,14 @@ export class Driver {
 			while (isHeartbeatRunSuccessful) {
 				isHeartbeatRunSuccessful = await this.AsyncEventHandler(
 					this.InterfaceEventClasses.map((i) => i.HeartbeatMethod),
-					2000,
+					Driver.heartbeatIntervalInMilliseconds,
 				);
 			}
 		}
-
 		//Put the final run
+		//TODO: Make final run exist when method for exiting loop exists
 
 		//In case of failure
-
 		if (!isStartSuccessful || !isHeartbeatRunSuccessful) {
 			this.SyncEventHandler(
 				this.InterfaceEventClasses.map((i) => i.FailureMethod),
