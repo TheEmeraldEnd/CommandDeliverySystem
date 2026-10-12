@@ -19,7 +19,7 @@ export class ServicesHandler implements IDriverEventInterface {
 	//Socket info
 	static socketsInfo: SocketInfo[] = [];
 
-	StartupMethod(): boolean {
+	async StartupMethod(): Promise<boolean> {
 		ServicesHandler.server = createServer(express);
 		ServicesHandler.io = new Server().listen(ServicesHandler.server, {
 			cors: { origin: "*" },
@@ -71,6 +71,11 @@ export class ServicesHandler implements IDriverEventInterface {
 	}
 
 	async HeartbeatMethod(): Promise<boolean> {
+		return ServicesHandler.AttemptRequestClientInfo();
+	}
+
+	static async AttemptRequestClientInfo(): Promise<boolean> {
+		console.log("thing");
 		try {
 			ServicesHandler.ClearAndRequestInfoOfAllSockets();
 		} catch (error) {
@@ -80,21 +85,25 @@ export class ServicesHandler implements IDriverEventInterface {
 		return true;
 	}
 
-	SuccessMethod(): boolean {
+	async SuccessMethod(): Promise<boolean> {
 		ServicesHandler.io.close();
 		ServicesHandler.server.close();
 		return true;
 	}
 
-	FailureMethod(): boolean {
+	async FailureMethod(): Promise<boolean> {
 		return true;
 	}
 
-	static SendCommandMessage(incomingCommandAndString: string) {
+	static async SendCommandMessage(incomingCommandAndString: string) {
+		await this.AttemptRequestClientInfo();
+
 		log(this.name, incomingCommandAndString);
 		GlobalBridge.SendNotification(
 			`${this.name}: recieved command "${incomingCommandAndString}"`,
 		);
+
+		console.log("Obsured = " + incomingCommandAndString);
 
 		let intendedService: string = (
 			incomingCommandAndString.match(/^([\w\-]+)/)?.[0] ?? ""
@@ -121,6 +130,7 @@ export class ServicesHandler implements IDriverEventInterface {
 				selectedSocketInfo.socketID === undefined
 			)
 		) {
+			console.log("Some messed up thing");
 			this.io
 				.to(selectedSocketInfo.socketID)
 				.emit("commandDelivery", messageContent);

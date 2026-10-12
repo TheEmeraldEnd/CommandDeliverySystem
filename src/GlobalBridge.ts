@@ -10,11 +10,13 @@ export class GlobalBridge {
 		DiscordDriver.SendMessageToGeneral(messageString);
 	}
 
-	static RecieveNotification(messageString: string = ""): void {
+	static async RecieveNotification(
+		messageString: string = "",
+	): Promise<void> {
 		if (messageString === "") {
 			return;
 		}
 
-		ServicesHandler.SendCommandMessage(messageString);
+		await ServicesHandler.SendCommandMessage(messageString);
 	}
 }

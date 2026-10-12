@@ -30,7 +30,9 @@ export class ServiceClient {
 		});
 
 		this.socket.on("commandDelivery", (IncomingMessage: string) => {
-			this.SendNotification(`Recieved ${IncomingMessage}`);
+			this.SendNotification(
+				`${this.serviceName}: Recieved ${IncomingMessage}`,
+			);
 		});
 	}
 

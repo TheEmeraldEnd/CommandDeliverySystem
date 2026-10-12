@@ -9,7 +9,7 @@ export class DiscordDriver implements IDriverEventInterface {
 	//Different clients
 	static staticWebhookClient: WebhookClient;
 	static staticClient: Client;
-	StartupMethod(): boolean {
+	async StartupMethod(): Promise<boolean> {
 		dotenv.config({});
 
 		DiscordDriver.staticClient = new Client({
@@ -23,8 +23,16 @@ export class DiscordDriver implements IDriverEventInterface {
 			],
 		});
 
-		DiscordDriver.staticClient.login(process.env.DISCORD_TOKEN);
-		DiscordDriver.staticClient.on("clientReady", () => {
+		let someString = await DiscordDriver.staticClient.login(
+			process.env.DISCORD_TOKEN,
+		);
+
+		if (someString === undefined || someString === "") {
+			console.log("Login Unsuccessful");
+			return false;
+		}
+
+		await DiscordDriver.staticClient.on("clientReady", () => {
 			DiscordDriver.#SendMessageToGeneral(
 				DiscordDriver.staticClient,
 				`${process.env.GENERAL_CHANNEL_TOKEN}`,
@@ -53,8 +61,9 @@ export class DiscordDriver implements IDriverEventInterface {
 				}
 			});
 
-			if (!hasCommandFired)
-				message.channel.send(DiscordDriver.#GetMessageError());
+			if (!hasCommandFired) {
+				await message.channel.send(DiscordDriver.#GetMessageError());
+			}
 		});
 
 		console.log("Discord Bot ready");
@@ -65,7 +74,7 @@ export class DiscordDriver implements IDriverEventInterface {
 		return true;
 	}
 
-	static SendMessageToGeneral(incomingSendingString: string = "") {
+	static async SendMessageToGeneral(incomingSendingString: string = "") {
 		if (
 			DiscordDriver.staticWebhookClient == null ||
 			DiscordDriver.staticWebhookClient == undefined
@@ -75,18 +84,18 @@ export class DiscordDriver implements IDriverEventInterface {
 			});
 		}
 
-		DiscordDriver.staticWebhookClient.send(incomingSendingString);
+		await DiscordDriver.staticWebhookClient.send(incomingSendingString);
 	}
 
 	async HeartbeatMethod(): Promise<boolean> {
 		return true;
 	}
 
-	FailureMethod(): boolean {
+	async FailureMethod(): Promise<boolean> {
 		return true;
 	}
 
-	SuccessMethod(): boolean {
+	async SuccessMethod(): Promise<boolean> {
 		return true;
 	}
 

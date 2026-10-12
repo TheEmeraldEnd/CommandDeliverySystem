@@ -30,7 +30,7 @@ export class EncoderDecoder implements IDriverEventInterface {
 		}
 	}
 
-	StartupMethod(): boolean {
+	async StartupMethod(): Promise<boolean> {
 		return true;
 	}
 
@@ -38,11 +38,11 @@ export class EncoderDecoder implements IDriverEventInterface {
 		return await true;
 	}
 
-	FailureMethod(): boolean {
+	async FailureMethod(): Promise<boolean> {
 		return true;
 	}
 
-	SuccessMethod(): boolean {
+	async SuccessMethod(): Promise<boolean> {
 		return true;
 	}
 }

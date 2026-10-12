@@ -5,24 +5,25 @@ import { ServicesHandler } from "./ServicesHandler/ServicesHandler.ts";
 //Methods should default to true or await true if not defined in inherited methods
 export interface IDriverEventInterface {
 	//Triggered on when the driver is starting startup
-	StartupMethod(): boolean;
+	StartupMethod(): Promise<boolean>;
 
 	//triggered periodically. Must be within interval
 	HeartbeatMethod(): Promise<boolean>;
 
 	//Used in if the driver class heartbeat method fails
-	FailureMethod(): boolean;
+	FailureMethod(): Promise<boolean>;
 
 	//Used if success (if reached in the future)
-	SuccessMethod(): boolean;
+	SuccessMethod(): Promise<boolean>;
 }
 
 export class Driver {
 	static InterfaceEventClasses: IDriverEventInterface[];
-	static heartbeatIntervalInMilliseconds: number = 2000;
-	constructor() {
-		Driver.InitializeApp();
-	}
+	static TimersInMilliseconds = class {
+		static heartbeatInterval: number = 2000;
+		static startupTimer: number = 2000;
+		static failureTimer: number = 20000;
+	};
 
 	static InitializeApp() {
 		this.InterfaceEventClasses = [
@@ -34,29 +35,32 @@ export class Driver {
 
 	static async RunApp() {
 		//Start the events
-		let isStartSuccessful = this.SyncEventHandler(
+		let isStartSuccessful = await this.AsyncEventHandler(
 			this.InterfaceEventClasses.map((i) => i.StartupMethod),
+			this.TimersInMilliseconds.startupTimer,
 		);
 
 		//Run the heartbeats
-		let isHeartbeatRunSuccessful: boolean = true;
-		if (isStartSuccessful) {
-			while (isHeartbeatRunSuccessful) {
-				isHeartbeatRunSuccessful = await this.AsyncEventHandler(
-					this.InterfaceEventClasses.map((i) => i.HeartbeatMethod),
-					Driver.heartbeatIntervalInMilliseconds,
-				);
-			}
-		}
+		// let isHeartbeatRunSuccessful: boolean = true;
+		// if (isStartSuccessful) {
+		// 	while (isHeartbeatRunSuccessful) {
+		// 		isHeartbeatRunSuccessful = await this.AsyncEventHandler(
+		// 			this.InterfaceEventClasses.map((i) => i.HeartbeatMethod),
+		// 			this.TimersInMilliseconds.heartbeatInterval,
+		// 		);
+		// 	}
+		// }
+
 		//Put the final run
 		//TODO: Make final run exist when method for exiting loop exists
 
 		//In case of failure
-		// if (!isStartSuccessful || !isHeartbeatRunSuccessful) {
-		// 	this.SyncEventHandler(
-		// 		this.InterfaceEventClasses.map((i) => i.FailureMethod),
-		// 	);
-		// }
+		if (!isStartSuccessful) {
+			this.AsyncEventHandler(
+				this.InterfaceEventClasses.map((i) => i.FailureMethod),
+				this.TimersInMilliseconds.failureTimer,
+			);
+		}
 	}
 
 	static SyncEventHandler(incomingFunctions: (() => boolean)[]): boolean {
