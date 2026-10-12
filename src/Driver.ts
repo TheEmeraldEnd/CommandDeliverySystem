@@ -52,11 +52,11 @@ export class Driver {
 		//TODO: Make final run exist when method for exiting loop exists
 
 		//In case of failure
-		if (!isStartSuccessful || !isHeartbeatRunSuccessful) {
-			this.SyncEventHandler(
-				this.InterfaceEventClasses.map((i) => i.FailureMethod),
-			);
-		}
+		// if (!isStartSuccessful || !isHeartbeatRunSuccessful) {
+		// 	this.SyncEventHandler(
+		// 		this.InterfaceEventClasses.map((i) => i.FailureMethod),
+		// 	);
+		// }
 	}
 
 	static SyncEventHandler(incomingFunctions: (() => boolean)[]): boolean {

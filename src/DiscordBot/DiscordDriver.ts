@@ -66,12 +66,6 @@ export class DiscordDriver implements IDriverEventInterface {
 	}
 
 	static SendMessageToGeneral(incomingSendingString: string = "") {
-		// DiscordDriver.#SendMessageToGeneral(
-		// 	DiscordDriver.staticClient,
-		// 	process.env.GENERAL_CHANNEL_TOKEN,
-		// 	incomingSendingString,
-		// );
-
 		if (
 			DiscordDriver.staticWebhookClient == null ||
 			DiscordDriver.staticWebhookClient == undefined
