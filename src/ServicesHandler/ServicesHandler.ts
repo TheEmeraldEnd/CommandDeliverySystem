@@ -31,6 +31,7 @@ export class ServicesHandler implements IDriverEventInterface {
 			console.log("A user is connected");
 
 			socket.on("message", (message) => {
+				console.log("This is reached");
 				ServicesHandler.io.emit(
 					"message",
 					`${socket.id.substring(0, 2)} said ${message}`,
@@ -57,6 +58,15 @@ export class ServicesHandler implements IDriverEventInterface {
 				};
 				ServicesHandler.socketsInfo.push(newSocketInfo);
 			});
+
+			socket.on("disconnect", () => {
+				ServicesHandler.socketsInfo =
+					ServicesHandler.socketsInfo.filter(
+						(e) => e.socketID !== socket.id,
+					);
+			});
+
+			socket.emit("getInfo");
 		});
 
 		ServicesHandler.server.listen(ServicesHandler.notificationPort, () => {
@@ -71,17 +81,6 @@ export class ServicesHandler implements IDriverEventInterface {
 	}
 
 	async HeartbeatMethod(): Promise<boolean> {
-		return ServicesHandler.AttemptRequestClientInfo();
-	}
-
-	static async AttemptRequestClientInfo(): Promise<boolean> {
-		console.log("thing");
-		try {
-			ServicesHandler.ClearAndRequestInfoOfAllSockets();
-		} catch (error) {
-			console.log(`ServicesHandler: ${error}`);
-			return false;
-		}
 		return true;
 	}
 
@@ -96,14 +95,10 @@ export class ServicesHandler implements IDriverEventInterface {
 	}
 
 	static async SendCommandMessage(incomingCommandAndString: string) {
-		await this.AttemptRequestClientInfo();
-
 		log(this.name, incomingCommandAndString);
 		GlobalBridge.SendNotification(
 			`${this.name}: recieved command "${incomingCommandAndString}"`,
 		);
-
-		console.log("Obsured = " + incomingCommandAndString);
 
 		let intendedService: string = (
 			incomingCommandAndString.match(/^([\w\-]+)/)?.[0] ?? ""
@@ -130,15 +125,11 @@ export class ServicesHandler implements IDriverEventInterface {
 				selectedSocketInfo.socketID === undefined
 			)
 		) {
-			console.log("Some messed up thing");
 			this.io
 				.to(selectedSocketInfo.socketID)
 				.emit("commandDelivery", messageContent);
+		} else {
+			console.log("No socket by name exists.");
 		}
-	}
-
-	static ClearAndRequestInfoOfAllSockets() {
-		this.socketsInfo = [];
-		ServicesHandler.io.emit("getInfo");
 	}
 }

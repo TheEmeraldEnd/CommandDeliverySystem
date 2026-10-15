@@ -34,6 +34,15 @@ export class ServiceClient {
 				`${this.serviceName}: Recieved ${IncomingMessage}`,
 			);
 		});
+
+		this.socket.on("disconnect", () => {
+			log(this.serviceName, `disconnected from services handler`);
+		});
+
+		this.socket.on("ForceDisconnect", () => {
+			log(this.serviceName, `Forced disconnect`);
+			this.socket.close();
+		});
 	}
 
 	IsConnected(): boolean {

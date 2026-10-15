@@ -8,12 +8,21 @@ export interface IDriverEventInterface {
 	StartupMethod(): Promise<boolean>;
 
 	//triggered periodically. Must be within interval
+	/**
+	 * Currently non-operational
+	 */
 	HeartbeatMethod(): Promise<boolean>;
 
+	/**
+	 * Currently Non operational
+	 */
 	//Used in if the driver class heartbeat method fails
 	FailureMethod(): Promise<boolean>;
 
 	//Used if success (if reached in the future)
+	/**
+	 * Currently non operational
+	 */
 	SuccessMethod(): Promise<boolean>;
 }
 
