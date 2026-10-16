@@ -1,9 +1,16 @@
 import { EncoderDecoder } from "./EncodingDecoding/EncoderDecoder.ts";
 import { DiscordDriver } from "./DiscordBot/DiscordDriver.ts";
 import { ServicesHandler } from "./ServicesHandler/ServicesHandler.ts";
+import Logger from "./LogRelated/Logger.ts";
 
 //Methods should default to true or await true if not defined in inherited methods
 export interface IDriverEventInterface {
+	/**
+	 * Displays console logs.
+	 * 	Must be set up in the startup method
+	 */
+	Logger: Logger;
+
 	//Triggered on when the driver is starting startup
 	StartupMethod(): Promise<boolean>;
 

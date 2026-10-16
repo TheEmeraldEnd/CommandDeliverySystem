@@ -3,14 +3,15 @@ import express from "express";
 import { GlobalBridge } from "../GlobalBridge.ts";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
-import { log } from "../LoggingMethods.ts";
 import { type SocketInfo } from "./ServicesHandler.types.ts";
+import Logger from "../LogRelated/Logger.ts";
 
 //Continue on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
 //Socket.io tutorial on https://www.youtube.com/watch?v=1BfCnjr_Vjg&t=305s
 export class ServicesHandler implements IDriverEventInterface {
 	static notificationPort: number = 8080;
 	static expressApp = express();
+	Logger: Logger;
 
 	//Has to be any type since the actual type requires alot of brackets.
 	static server: any;
@@ -18,6 +19,10 @@ export class ServicesHandler implements IDriverEventInterface {
 
 	//Socket info
 	static socketsInfo: SocketInfo[] = [];
+
+	constructor() {
+		this.Logger = new Logger("ServicesHandler");
+	}
 
 	async StartupMethod(): Promise<boolean> {
 		ServicesHandler.server = createServer(express);
@@ -31,7 +36,6 @@ export class ServicesHandler implements IDriverEventInterface {
 			console.log("A user is connected");
 
 			socket.on("message", (message) => {
-				console.log("This is reached");
 				ServicesHandler.io.emit(
 					"message",
 					`${socket.id.substring(0, 2)} said ${message}`,
@@ -95,7 +99,6 @@ export class ServicesHandler implements IDriverEventInterface {
 	}
 
 	static async SendCommandMessage(incomingCommandAndString: string) {
-		log(this.name, incomingCommandAndString);
 		GlobalBridge.SendNotification(
 			`${this.name}: recieved command "${incomingCommandAndString}"`,
 		);
