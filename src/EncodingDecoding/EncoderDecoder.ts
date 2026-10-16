@@ -1,8 +1,10 @@
 import { type IDriverEventInterface } from "../Driver.ts";
+import Logger from "../LogRelated/Logger.ts";
 
 //For future development, so this will focus on only being part of the passing of information
 export class EncoderDecoder implements IDriverEventInterface {
 	static isEncryptToggle: boolean = false;
+	static Logger: Logger = new Logger(EncoderDecoder.name);
 
 	static Encrypt(incomingMessage: string = ""): string {
 		let result: string = incomingMessage;

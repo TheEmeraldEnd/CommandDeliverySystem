@@ -11,7 +11,7 @@ import Logger from "../LogRelated/Logger.ts";
 export class ServicesHandler implements IDriverEventInterface {
 	static notificationPort: number = 8080;
 	static expressApp = express();
-	Logger: Logger;
+	static Logger: Logger = new Logger(ServicesHandler.name);
 
 	//Has to be any type since the actual type requires alot of brackets.
 	static server: any;
@@ -20,11 +20,9 @@ export class ServicesHandler implements IDriverEventInterface {
 	//Socket info
 	static socketsInfo: SocketInfo[] = [];
 
-	constructor() {
-		this.Logger = new Logger("ServicesHandler");
-	}
-
 	async StartupMethod(): Promise<boolean> {
+		ServicesHandler.Logger.log("THis is a thing");
+
 		ServicesHandler.server = createServer(express);
 		ServicesHandler.io = new Server().listen(ServicesHandler.server, {
 			cors: { origin: "*" },
@@ -33,8 +31,6 @@ export class ServicesHandler implements IDriverEventInterface {
 		let isServerListeningSuccessful = false;
 
 		ServicesHandler.io.on("connection", (socket) => {
-			console.log("A user is connected");
-
 			socket.on("message", (message) => {
 				ServicesHandler.io.emit(
 					"message",
@@ -74,7 +70,7 @@ export class ServicesHandler implements IDriverEventInterface {
 		});
 
 		ServicesHandler.server.listen(ServicesHandler.notificationPort, () => {
-			console.log(
+			ServicesHandler.Logger.log(
 				`Listening on notification port http://localhost:${ServicesHandler.notificationPort}`,
 			);
 		});
@@ -132,7 +128,7 @@ export class ServicesHandler implements IDriverEventInterface {
 				.to(selectedSocketInfo.socketID)
 				.emit("commandDelivery", messageContent);
 		} else {
-			console.log("No socket by name exists.");
+			ServicesHandler.Logger.log("No socket by name exists.");
 		}
 	}
 }

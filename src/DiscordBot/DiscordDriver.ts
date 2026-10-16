@@ -4,11 +4,16 @@ import { Client, GatewayIntentBits, WebhookClient } from "discord.js";
 
 import path from "node:path";
 import { messageCreateCommands } from "./Commands/MessageCreateCommands.ts";
+import Logger from "../LogRelated/Logger.ts";
 
 export class DiscordDriver implements IDriverEventInterface {
 	//Different clients
 	static staticWebhookClient: WebhookClient;
 	static staticClient: Client;
+
+	//Logger
+	static Logger: Logger = new Logger(DiscordDriver.name);
+
 	async StartupMethod(): Promise<boolean> {
 		dotenv.config({});
 
@@ -28,7 +33,7 @@ export class DiscordDriver implements IDriverEventInterface {
 		);
 
 		if (someString === undefined || someString === "") {
-			console.log("Login Unsuccessful");
+			DiscordDriver.Logger.warn("Login Unsuccessful");
 			return false;
 		}
 
@@ -55,7 +60,9 @@ export class DiscordDriver implements IDriverEventInterface {
 					messageCreateCommand.callbackID.toUpperCase() ===
 					messageID.toUpperCase()
 				) {
-					console.log(messageCreateCommand.name + " is activated");
+					DiscordDriver.Logger.log(
+						messageCreateCommand.name + " is activated",
+					);
 					hasCommandFired = true;
 					await messageCreateCommand.CallBackFunction(message);
 				}
@@ -66,10 +73,10 @@ export class DiscordDriver implements IDriverEventInterface {
 			}
 		});
 
-		console.log("Discord Bot ready");
+		DiscordDriver.Logger.log("Discord Bot ready");
 
 		DiscordDriver.SendMessageToGeneral("Discord Response system is ready");
-		console.log("Discord Response system is ready");
+		DiscordDriver.Logger.log("Discord Response system is ready");
 
 		return true;
 	}
