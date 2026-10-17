@@ -1,5 +1,5 @@
 import { Driver } from "./Driver.ts";
-import { ServiceClient } from "./ServicesHandler/ServicesHandlerTemplate/ServiceClient.ts";
+import { ServiceClient } from "./ServicesHandler/ServicesClient/ServiceClient.ts";
 import { ServicesHandler } from "./ServicesHandler/ServicesHandler.ts";
 
 let client = new ServiceClient();

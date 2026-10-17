@@ -1,12 +1,16 @@
 import { io, Socket } from "socket.io-client";
 import { log, warn, error } from "./ServiceClientConsole.ts";
 import { IncomingMessage } from "node:http";
+import Logger from "./LogRelated/Logger.ts";
 
 export class ServiceClient {
 	socket: Socket;
 	serviceName: string;
+	Logger: Logger = new Logger(ServiceClient.name);
 	constructor(socketPortNumber: number = 8080, paramName: string = "client") {
 		this.serviceName = paramName;
+
+		this.Logger.setServiceName(this.serviceName);
 
 		this.socket = io(`ws://localhost:${socketPortNumber}`);
 
@@ -18,11 +22,11 @@ export class ServiceClient {
 
 		this.socket.on("connect", () => {
 			// socket connected
-			log(this.serviceName, "Socket Connected");
+			this.Logger.log("Socket Connected");
 		});
 
 		this.socket.on("discordNotificationResponse", (res: string) => {
-			log(this.serviceName, res);
+			this.Logger.log(res);
 		});
 
 		this.socket.on("getInfo", () => {
@@ -36,11 +40,11 @@ export class ServiceClient {
 		});
 
 		this.socket.on("disconnect", () => {
-			log(this.serviceName, `disconnected from services handler`);
+			this.Logger.log(`disconnected from services handler`);
 		});
 
 		this.socket.on("ForceDisconnect", () => {
-			log(this.serviceName, `Forced disconnect`);
+			this.Logger.log(`Forced disconnect`);
 			this.socket.close();
 		});
 	}

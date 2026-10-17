@@ -13,7 +13,7 @@ export default class Logger {
 	 * 	The message showing up in the console logs
 	 */
 	log(incomingMessage: string = ""): void {
-		console.log(`${this.scriptName}: ${incomingMessage}`);
+		console.log(this.formatString(incomingMessage));
 	}
 
 	/**
@@ -22,7 +22,7 @@ export default class Logger {
 	 * 	The message showing up in the console logs
 	 */
 	warn(incomingMessage: string = ""): void {
-		console.warn(`${this.scriptName}: ${incomingMessage}`);
+		console.warn(this.formatString(incomingMessage));
 	}
 
 	/**
@@ -31,6 +31,10 @@ export default class Logger {
 	 * 	The message showing up in the console logs
 	 */
 	error(incomingMessage: string = ""): void {
-		console.error(`${this.scriptName}: ${incomingMessage}`);
+		console.error(this.formatString(incomingMessage));
+	}
+
+	formatString(incomingMessage: string): string {
+		return `${this.scriptName}: ${incomingMessage}`;
 	}
 }

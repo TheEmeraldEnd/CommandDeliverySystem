@@ -21,8 +21,6 @@ export class ServicesHandler implements IDriverEventInterface {
 	static socketsInfo: SocketInfo[] = [];
 
 	async StartupMethod(): Promise<boolean> {
-		ServicesHandler.Logger.log("THis is a thing");
-
 		ServicesHandler.server = createServer(express);
 		ServicesHandler.io = new Server().listen(ServicesHandler.server, {
 			cors: { origin: "*" },
