@@ -1,12 +1,13 @@
-import { type IDriverEventInterface } from "../Driver.ts";
-import express from "express";
-import { GlobalBridge } from "../GlobalBridge.ts";
-import { Server } from "socket.io";
-import { createServer } from "node:http";
-import { type SocketInfo } from "./ServicesHandler.types.ts";
-import Logger from "../LogRelated/Logger.ts";
+import { type IDriverEventInterface } from '../Driver.ts';
+import express from 'express';
+import { GlobalBridge } from '../GlobalBridge.ts';
+import { Server } from 'socket.io';
+import { createServer } from 'node:http';
+import { type SocketInfo } from './ServicesHandler.types.ts';
+import Logger from '../LogRelated/Logger.ts';
+import { AddEventListenersAtOn } from './Events/SocketEvents.ts';
 
-//Continue on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
+//Express Tutorial on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
 //Socket.io tutorial on https://www.youtube.com/watch?v=1BfCnjr_Vjg&t=305s
 export class ServicesHandler implements IDriverEventInterface {
 	static notificationPort: number = 8080;
@@ -23,48 +24,16 @@ export class ServicesHandler implements IDriverEventInterface {
 	async StartupMethod(): Promise<boolean> {
 		ServicesHandler.server = createServer(express);
 		ServicesHandler.io = new Server().listen(ServicesHandler.server, {
-			cors: { origin: "*" },
+			cors: {
+				origin: `ws://localhost:${ServicesHandler.notificationPort}`,
+			},
 		});
 
 		let isServerListeningSuccessful = false;
 
-		ServicesHandler.io.on("connection", (socket) => {
-			socket.on("message", (message) => {
-				ServicesHandler.io.emit(
-					"message",
-					`${socket.id.substring(0, 2)} said ${message}`,
-				);
-			});
-
-			socket.on(
-				"discordNotification",
-				(incomingName: string, notification: string) => {
-					GlobalBridge.SendNotification(
-						`${incomingName}: ${notification}`,
-					);
-					socket.emit(
-						"discordNotificationResponse",
-						"ServicesHandler server recieved notification successfully.",
-					);
-				},
-			);
-
-			socket.on("infoReciever", (incomingServiceName: string) => {
-				let newSocketInfo: SocketInfo = {
-					socketID: socket.id,
-					serviceName: incomingServiceName,
-				};
-				ServicesHandler.socketsInfo.push(newSocketInfo);
-			});
-
-			socket.on("disconnect", () => {
-				ServicesHandler.socketsInfo =
-					ServicesHandler.socketsInfo.filter(
-						(e) => e.socketID !== socket.id,
-					);
-			});
-
-			socket.emit("getInfo");
+		ServicesHandler.io.on('connection', (socket) => {
+			AddEventListenersAtOn(socket);
+			socket.emit('getInfo');
 		});
 
 		ServicesHandler.server.listen(ServicesHandler.notificationPort, () => {
@@ -98,15 +67,15 @@ export class ServicesHandler implements IDriverEventInterface {
 		);
 
 		let intendedService: string = (
-			incomingCommandAndString.match(/^([\w\-]+)/)?.[0] ?? ""
+			incomingCommandAndString.match(/^([\w\-]+)/)?.[0] ?? ''
 		).trim();
 
 		let messageContent: string = (
-			incomingCommandAndString.match(/\s(.*)/)?.[0] ?? ""
+			incomingCommandAndString.match(/\s(.*)/)?.[0] ?? ''
 		).trim();
 
 		//Sort through the available services
-		let selectedSocketInfo: SocketInfo = { socketID: "", serviceName: "" };
+		let selectedSocketInfo: SocketInfo = { socketID: '', serviceName: '' };
 		for (let i = 0; i < this.socketsInfo.length; i++) {
 			if (
 				this.socketsInfo[i].serviceName.toLowerCase() ===
@@ -118,15 +87,15 @@ export class ServicesHandler implements IDriverEventInterface {
 
 		if (
 			!(
-				selectedSocketInfo.socketID === "" ||
+				selectedSocketInfo.socketID === '' ||
 				selectedSocketInfo.socketID === undefined
 			)
 		) {
 			this.io
 				.to(selectedSocketInfo.socketID)
-				.emit("commandDelivery", messageContent);
+				.emit('commandDelivery', messageContent);
 		} else {
-			ServicesHandler.Logger.log("No socket by name exists.");
+			ServicesHandler.Logger.log('No socket by name exists.');
 		}
 	}
 }
