@@ -1,10 +1,8 @@
-import { type IDriverEventInterface } from "../Driver.ts";
-import dotenv from "dotenv";
-import { Client, GatewayIntentBits, WebhookClient } from "discord.js";
-
-import path from "node:path";
-import { messageCreateCommands } from "./Commands/MessageCreateCommands.ts";
-import Logger from "../LogRelated/Logger.ts";
+import { type IDriverEventInterface } from '../Driver.ts';
+import dotenv from 'dotenv';
+import { Client, GatewayIntentBits, WebhookClient } from 'discord.js';
+import { messageCreateCommands } from './Commands/MessageCreateCommands.ts';
+import Logger from '../LogRelated/Logger.ts';
 
 export class DiscordDriver implements IDriverEventInterface {
 	//Different clients
@@ -32,12 +30,12 @@ export class DiscordDriver implements IDriverEventInterface {
 			process.env.DISCORD_TOKEN,
 		);
 
-		if (someString === undefined || someString === "") {
-			DiscordDriver.Logger.warn("Login Unsuccessful");
+		if (someString === undefined || someString === '') {
+			DiscordDriver.Logger.warn('Login Unsuccessful');
 			return false;
 		}
 
-		await DiscordDriver.staticClient.on("clientReady", () => {
+		await DiscordDriver.staticClient.on('clientReady', () => {
 			DiscordDriver.#SendMessageToGeneral(
 				DiscordDriver.staticClient,
 				`${process.env.GENERAL_CHANNEL_TOKEN}`,
@@ -45,13 +43,13 @@ export class DiscordDriver implements IDriverEventInterface {
 			);
 		});
 
-		DiscordDriver.staticClient.on("messageCreate", async (message) => {
+		DiscordDriver.staticClient.on('messageCreate', async (message) => {
 			if (message.author.bot) {
 				return;
 			}
 
 			let messageID: string =
-				message.content.match(/^([\w\-]+)/)?.[0] ?? "";
+				message.content.match(/^([\w\-]+)/)?.[0] ?? '';
 
 			let hasCommandFired: boolean = false;
 
@@ -61,7 +59,7 @@ export class DiscordDriver implements IDriverEventInterface {
 					messageID.toUpperCase()
 				) {
 					DiscordDriver.Logger.log(
-						messageCreateCommand.name + " is activated",
+						messageCreateCommand.name + ' is activated',
 					);
 					hasCommandFired = true;
 					await messageCreateCommand.CallBackFunction(message);
@@ -73,15 +71,15 @@ export class DiscordDriver implements IDriverEventInterface {
 			}
 		});
 
-		DiscordDriver.Logger.log("Discord Bot ready");
+		DiscordDriver.Logger.log('Discord Bot ready');
 
-		DiscordDriver.SendMessageToGeneral("Discord Response system is ready");
-		DiscordDriver.Logger.log("Discord Response system is ready");
+		DiscordDriver.SendMessageToGeneral('Discord Response system is ready');
+		DiscordDriver.Logger.log('Discord Response system is ready');
 
 		return true;
 	}
 
-	static async SendMessageToGeneral(incomingSendingString: string = "") {
+	static async SendMessageToGeneral(incomingSendingString: string = '') {
 		if (
 			DiscordDriver.staticWebhookClient == null ||
 			DiscordDriver.staticWebhookClient == undefined
@@ -112,8 +110,8 @@ export class DiscordDriver implements IDriverEventInterface {
 
 	static #SendMessageToGeneral(
 		incomingClient: Client<boolean>,
-		channelToken: string = "",
-		message: string = "",
+		channelToken: string = '',
+		message: string = '',
 	) {
 		let generalChannel = incomingClient.channels.cache.get(
 			`${channelToken}`,
@@ -125,6 +123,6 @@ export class DiscordDriver implements IDriverEventInterface {
 	}
 
 	static #GetMessageError(): string {
-		return "No command like that has existed. Type help for more information.";
+		return 'No command like that has existed. Type help for more information.';
 	}
 }
