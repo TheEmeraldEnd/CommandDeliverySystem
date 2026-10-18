@@ -96,6 +96,9 @@ export class ServicesHandler implements IDriverEventInterface {
 				.emit('commandDelivery', messageContent);
 		} else {
 			ServicesHandler.Logger.log('No socket by name exists.');
+			GlobalBridge.SendNotification(
+				'No service by that name exists. Please try again.',
+			);
 		}
 	}
 
