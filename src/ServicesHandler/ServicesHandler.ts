@@ -98,4 +98,9 @@ export class ServicesHandler implements IDriverEventInterface {
 			ServicesHandler.Logger.log('No socket by name exists.');
 		}
 	}
+
+	static async CloseAll() {
+		ServicesHandler.io.emit('ForceDisconnect');
+		ServicesHandler.io.disconnectSockets();
+	}
 }
