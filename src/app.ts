@@ -2,6 +2,10 @@ import { Driver } from './Driver.ts';
 import { ServiceClient } from './ServicesHandler/ServicesClient/ServiceClient.ts';
 
 let client = new ServiceClient();
+client.AddCommandMethodToEvents('command', (incomingArguments: string) => {
+	console.log('COMMAND SUCCESSFUL ' + incomingArguments);
+});
+
 let client2 = new ServiceClient(8080, 'client2');
 
 Driver.InitializeApp();
