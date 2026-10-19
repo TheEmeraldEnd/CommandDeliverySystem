@@ -1,6 +1,4 @@
-import { Socket } from 'socket.io-client';
-import Logger from '../LogRelated/Logger.ts';
-import { ServiceClient } from '../ServiceClient.ts';
+import { ServiceClient } from "../ServiceClient.ts";
 
 interface IClientSocketEvent {
 	eventName: string;
@@ -9,7 +7,7 @@ interface IClientSocketEvent {
 
 const ClientSocketEvents: IClientSocketEvent[] = [
 	new (class ConnectionError implements IClientSocketEvent {
-		eventName: string = 'connection_error';
+		eventName: string = "connection_error";
 		AddEventListenerAtOn(client: ServiceClient) {
 			client.socket.on(this.eventName, (err) => {
 				client.Logger.error(err.message);
@@ -19,15 +17,15 @@ const ClientSocketEvents: IClientSocketEvent[] = [
 		}
 	})(),
 	new (class Connection implements IClientSocketEvent {
-		eventName: string = 'connect';
+		eventName: string = "connect";
 		AddEventListenerAtOn(client: ServiceClient) {
 			client.socket.on(this.eventName, () => {
-				client.Logger.log('Socket Connected');
+				client.Logger.log("Socket Connected");
 			});
 		}
 	})(),
 	new (class DiscordNotificationResponse implements IClientSocketEvent {
-		eventName: string = 'discordNotificationResponse';
+		eventName: string = "discordNotificationResponse";
 		AddEventListenerAtOn(client: ServiceClient) {
 			client.socket.on(this.eventName, (res: string) => {
 				client.Logger.log(res);
@@ -35,32 +33,32 @@ const ClientSocketEvents: IClientSocketEvent[] = [
 		}
 	})(),
 	new (class GetInfo implements IClientSocketEvent {
-		eventName: string = 'getInfo';
+		eventName: string = "getInfo";
 		AddEventListenerAtOn(client: ServiceClient) {
 			client.socket.on(this.eventName, () => {
-				client.socket.emit('infoReciever', client.serviceName);
+				client.socket.emit("infoReciever", client.serviceName);
 			});
 		}
 	})(),
 	new (class CommandDelivery implements IClientSocketEvent {
-		eventName: string = 'commandDelivery';
+		eventName: string = "commandDelivery";
 		AddEventListenerAtOn(client: ServiceClient) {
 			client.socket.on(this.eventName, (IncomingMessage: string) => {
 				//Initialize the command info
 				IncomingMessage.trim();
 				let spaceCount: number = (
-					IncomingMessage.match(/([\s]+)/g) ?? ''
+					IncomingMessage.match(/([\s]+)/g) ?? ""
 				).length;
-				let command: string = '';
-				let argumentString: string = '';
+				let command: string = "";
+				let argumentString: string = "";
 
 				//Sort arguments
 				if (spaceCount === 0) {
 					//Has no arguments
 					command = IncomingMessage;
 				} else {
-					command = IncomingMessage.split(' ')[0];
-					argumentString = IncomingMessage.split(' ')[1];
+					command = IncomingMessage.split(" ")[0];
+					argumentString = IncomingMessage.split(" ")[1];
 				}
 
 				let isMethodCalled: boolean = false;
@@ -73,13 +71,13 @@ const ClientSocketEvents: IClientSocketEvent[] = [
 
 				if (isMethodCalled) {
 					client.socket.emit(
-						'discordNotification',
+						"discordNotification",
 						client.serviceName,
 						`command ${command} was successful`,
 					);
 				} else {
 					client.socket.emit(
-						'discordNotification',
+						"discordNotification",
 						client.serviceName,
 						`Command {${command}} doesn't exist for this service`,
 					);
@@ -88,7 +86,7 @@ const ClientSocketEvents: IClientSocketEvent[] = [
 		}
 	})(),
 	new (class Disconnect implements IClientSocketEvent {
-		eventName: string = 'disconnect';
+		eventName: string = "disconnect";
 		AddEventListenerAtOn(client: ServiceClient) {
 			client.socket.on(this.eventName, () => {
 				client.Logger.log(
@@ -98,7 +96,7 @@ const ClientSocketEvents: IClientSocketEvent[] = [
 		}
 	})(),
 	new (class ForceDisconnect implements IClientSocketEvent {
-		eventName: string = 'ForceDisconnect';
+		eventName: string = "ForceDisconnect";
 		AddEventListenerAtOn(client: ServiceClient) {
 			client.socket.on(this.eventName, () => {
 				client.Logger.log(`Forced disconnect`);

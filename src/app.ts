@@ -1,15 +1,10 @@
-import { Driver } from './Driver.ts';
-import { ServiceClient } from './ServicesHandler/ServicesClient/ServiceClient.ts';
+import { Driver } from "./Driver.ts";
+import StarterClient from "./StarterClient/StarterClient.ts";
 
-let client = new ServiceClient();
-client.AddCommandMethodToEvents('command', (incomingArguments: string) => {
-	console.log('COMMAND SUCCESSFUL ' + incomingArguments);
-});
-
-let client2 = new ServiceClient(8080, 'client2');
+const starterClient: StarterClient = new StarterClient();
 
 Driver.InitializeApp();
 
 Driver.RunApp();
 
-console.log('Application Run Complete!!');
+console.log("Application Run Complete!!");
