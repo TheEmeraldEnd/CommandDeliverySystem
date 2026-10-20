@@ -1,5 +1,6 @@
 //Specific files
 /Ignore
+/src/StarterClient/FileRelated/PathDatabase.txt
 
 //File Extentions
 .env
