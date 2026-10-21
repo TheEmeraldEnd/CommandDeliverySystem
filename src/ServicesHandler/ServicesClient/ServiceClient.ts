@@ -1,13 +1,13 @@
-import { io, Socket } from 'socket.io-client';
-import Logger from './LogRelated/Logger.ts';
-import { AddEventListenersAtOn } from './Events/ClientEvents.ts';
+import { io, Socket } from "socket.io-client";
+import Logger from "./LogRelated/Logger.ts";
+import { AddEventListenersAtOn } from "./Events/ClientEvents.ts";
 
 export class ServiceClient {
 	socket: Socket;
 	serviceName: string;
 	Logger: Logger = new Logger(ServiceClient.name);
 	ServiceCommandInfoArray: ServiceCommandInfo[] = [];
-	constructor(socketPortNumber: number = 8080, paramName: string = 'client') {
+	constructor(socketPortNumber: number = 8080, paramName: string = "client") {
 		this.serviceName = paramName;
 
 		this.Logger.setServiceName(this.serviceName);
@@ -15,6 +15,13 @@ export class ServiceClient {
 		this.socket = io(`ws://localhost:${socketPortNumber}`);
 
 		AddEventListenersAtOn(this);
+	}
+
+	SendMessageToBot(incomingMessage: string) {
+		this.socket.emit(
+			"discordNotification",
+			(this.serviceName, incomingMessage),
+		);
 	}
 
 	/**
@@ -29,7 +36,7 @@ export class ServiceClient {
 		incomingCommandFunction: (incomingArguments: string) => void,
 	) {
 		let result: ServiceCommandInfo = {
-			commandName: incomingCommandName.replaceAll(' ', ''),
+			commandName: incomingCommandName.replaceAll(" ", ""),
 			commandFunction: incomingCommandFunction,
 		};
 		this.ServiceCommandInfoArray.push(result);

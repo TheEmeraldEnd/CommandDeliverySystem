@@ -1,11 +1,8 @@
-import path from "node:path";
 import * as FileHandler from "./FileHandler.ts";
 import StarterClient from "../StarterClient.ts";
 
 const baseDirectoryPath: string = `./src/StarterClient/FileRelated`;
 const fileNameAndExtension: string = "PathDatabase.txt";
-
-function GetDatabaseDirectoryForThis() {}
 
 function GetDatabasePath(): string {
 	if (baseDirectoryPath === "") {
@@ -23,14 +20,46 @@ function CreateDataBase() {
 	FileHandler.WriteToFile(GetDatabasePath(), "");
 }
 
-export function CreateDatabaseIfDatabaseDoesntExist(client: StarterClient) {
-	client.serviceClient.Logger.log(`${IsDatabaseExist()}`);
+export function CreateDatabaseIfDatabaseDoesntExist() {
+	StarterClient.serviceClient.Logger.log(`${IsDatabaseExist()}`);
 	if (!IsDatabaseExist()) {
-		client.serviceClient.Logger.log(
+		StarterClient.serviceClient.Logger.log(
 			`${fileNameAndExtension} doesn't exist. Creating it now, but no path exists for it to work.`,
 		);
 		CreateDataBase();
 	} else {
-		client.serviceClient.Logger.log(`${fileNameAndExtension} exists.`);
+		StarterClient.serviceClient.Logger.log(
+			`${fileNameAndExtension} exists.`,
+		);
+	}
+}
+
+export function OpenApplication(keyWord: string) {
+	let fullContent: string = FileHandler.ReadFromFile(GetDatabasePath()) ?? "";
+
+	StarterClient.serviceClient.SendMessageToBot(fullContent);
+	if (fullContent === "") {
+		StarterClient.serviceClient.SendMessageToBot(
+			`No keyword by the name ${keyWord}`,
+		);
+		return;
+	}
+
+	let contentLines: string[] = fullContent.split("\n");
+
+	let contentDictionary: { [id: string]: string }[] = [];
+
+	for (let i = 0; i < contentLines.length; i++) {
+		let contentLine = contentLines[i];
+		// if (!contentLine.includes("=")) {
+		// 	let warningString = "Improperly formatted line in PathDatabase";
+		// 	StarterClient.serviceClient.Logger.warn(warningString);
+		// 	StarterClient.serviceClient.SendMessageToBot(warningString);
+		// 	return;
+		// }
+		// let contentKeyword: string = contentLine.split("=")[0];
+		// let contentPath: string = contentLine.split("=")[1];
+
+		// contentDictionary.push({ [contentKeyword]: contentPath });
 	}
 }
