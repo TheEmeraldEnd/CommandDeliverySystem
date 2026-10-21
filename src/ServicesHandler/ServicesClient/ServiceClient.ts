@@ -20,7 +20,8 @@ export class ServiceClient {
 	SendMessageToBot(incomingMessage: string) {
 		this.socket.emit(
 			"discordNotification",
-			(this.serviceName, incomingMessage),
+			this.serviceName,
+			incomingMessage,
 		);
 	}
 
