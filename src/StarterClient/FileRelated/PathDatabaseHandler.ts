@@ -69,7 +69,5 @@ export function OpenApplication(keyWord: string) {
 		contentDictionary.set(contentKeyword, contentPath);
 	}
 
-	console.log(contentDictionary.get(keyWord.toLowerCase()));
-	contentDictionary.get(keyWord.toLowerCase());
 	execFileSync(contentDictionary.get(keyWord.toLowerCase()) ?? "");
 }

@@ -5,10 +5,9 @@ import { AddEventListenersToClient } from "./StarterClientCommands.ts";
 export default class StarterClient {
 	static serviceClient: ServiceClient;
 	constructor() {
-		StarterClient.serviceClient = new ServiceClient(
-			8080,
-			StarterClient.name,
-		);
+		let serviceName = "Starter";
+
+		StarterClient.serviceClient = new ServiceClient(8080, serviceName);
 
 		PathDatabaseHandler.CreateDatabaseIfDatabaseDoesntExist();
 
