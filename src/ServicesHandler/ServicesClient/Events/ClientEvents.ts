@@ -69,19 +69,18 @@ const ClientSocketEvents: IClientSocketEvent[] = [
 					}
 				});
 
+				let notificationMessage: string = "";
 				if (isMethodCalled) {
-					client.socket.emit(
-						"discordNotification",
-						client.serviceName,
-						`command ${command} was successful`,
-					);
+					notificationMessage = `command ${command} was successful`;
 				} else {
-					client.socket.emit(
-						"discordNotification",
-						client.serviceName,
-						`Command {${command}} doesn't exist for this service`,
-					);
+					`Command {${command}} doesn't exist for this service`;
 				}
+
+				client.socket.emit(
+					"discordNotification",
+					client.serviceName,
+					notificationMessage,
+				);
 			});
 		}
 	})(),
