@@ -25,14 +25,20 @@ const ServerSocketEvents: ISocketEvent[] = [
 		AddEventListenerAtOn(incomingSocket: Socket) {
 			incomingSocket.on(
 				this.eventName,
-				(incomingName: string, notification: string) => {
+				(incomingName: string, notification: string, callback) => {
 					GlobalBridge.SendNotification(
 						`${incomingName}: ${notification}`,
 					);
-					incomingSocket.emit(
-						"discordNotificationResponse",
-						"ServicesHandler server recieved notification successfully.",
-					);
+					// incomingSocket.emit(
+					// 	"discordNotificationResponse",
+					// 	"ServicesHandler server recieved notification successfully.",
+					// );
+
+					callback({
+						status: "ok",
+						message:
+							"ServicesHandler server recieved notification successfully. TTTTTTTTTHHHHINNNGGG",
+					});
 				},
 			);
 		}
