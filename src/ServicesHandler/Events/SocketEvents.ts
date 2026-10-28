@@ -37,7 +37,7 @@ const ServerSocketEvents: ISocketEvent[] = [
 					callback({
 						status: "ok",
 						message:
-							"ServicesHandler server recieved notification successfully. TTTTTTTTTHHHHINNNGGG",
+							"ServicesHandler server recieved notification successfully.",
 					});
 				},
 			);
