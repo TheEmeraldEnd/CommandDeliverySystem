@@ -24,14 +24,6 @@ const ClientSocketEvents: IClientSocketEvent[] = [
 			});
 		}
 	})(),
-	new (class DiscordNotificationResponse implements IClientSocketEvent {
-		eventName: string = "discordNotificationResponse";
-		AddEventListenerAtOn(client: ServiceClient) {
-			client.socket.on(this.eventName, (res: string) => {
-				client.Logger.log(res);
-			});
-		}
-	})(),
 	new (class GetInfo implements IClientSocketEvent {
 		eventName: string = "getInfo";
 		AddEventListenerAtOn(client: ServiceClient) {
