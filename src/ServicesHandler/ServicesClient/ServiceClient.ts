@@ -17,12 +17,16 @@ export class ServiceClient {
 		AddEventListenersAtOn(this);
 	}
 
-	SendMessageToBot(incomingMessage: string) {
-		this.socket.emit(
-			"discordNotification",
-			this.serviceName,
-			incomingMessage,
-		);
+	async SendMessageToBot(incomingMessage: string) {
+		try {
+			const response = await this.socket.emitWithAck(
+				"discordNotification",
+				incomingMessage,
+			);
+			this.Logger.log(response.message);
+		} catch (err) {
+			this.Logger.error(`${err}`);
+		}
 	}
 
 	/**
