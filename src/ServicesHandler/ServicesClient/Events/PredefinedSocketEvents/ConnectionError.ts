@@ -1,5 +1,5 @@
 import { type IClientSocketEvent } from '../ClientEvents.ts';
-import { ServiceClient } from '../../ServiceClient';
+import { ServiceClient } from '../../ServiceClient.ts';
 
 export default class ConnectionError implements IClientSocketEvent {
 	eventName: string = 'connection_error';
