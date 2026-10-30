@@ -1,13 +1,13 @@
 import StarterClient from "./StarterClient.ts";
 import { OpenApplication } from "./FileRelated/PathDatabaseHandler.ts";
 
-type StarterClientCommandInfo = {
+type IStarterClientCommandInfo = {
 	commandName: string;
 	commandMethod: (incomingArguments: string) => void;
 };
 
-const CommandInfos: StarterClientCommandInfo[] = [
-	new (class Start implements StarterClientCommandInfo {
+const CommandInfos: IStarterClientCommandInfo[] = [
+	new (class Start implements IStarterClientCommandInfo {
 		commandName: string = "start";
 		commandMethod(incomingArguments: string) {
 			if (incomingArguments.trim().includes(" ")) {
