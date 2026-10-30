@@ -1,13 +1,13 @@
-import { type ISocketEvent } from "../SocketEvents.ts";
-import { Socket } from "socket.io";
-import { type SocketInfo } from "../../ServicesHandler.types.ts";
-import { ServicesHandler } from "../../ServicesHandler.ts";
+import { type ISocketEvent } from '../SocketEvents.ts';
+import { Socket } from 'socket.io';
+import { type ISocketInfo } from '../../ServicesHandler.types.ts';
+import { ServicesHandler } from '../../ServicesHandler.ts';
 
 export default class InfoReciever implements ISocketEvent {
-	eventName: string = "infoReciever";
+	eventName: string = 'infoReciever';
 	AddEventListenerAtOn(incomingSocket: Socket) {
 		incomingSocket.on(this.eventName, (incomingServiceName: string) => {
-			let newSocketInfo: SocketInfo = {
+			let newSocketInfo: ISocketInfo = {
 				socketID: incomingSocket.id,
 				serviceName: incomingServiceName,
 			};

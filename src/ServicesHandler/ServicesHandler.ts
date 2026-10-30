@@ -3,7 +3,7 @@ import express from 'express';
 import { GlobalBridge } from '../GlobalBridge.ts';
 import { Server } from 'socket.io';
 import { createServer } from 'node:http';
-import { type SocketInfo } from './ServicesHandler.types.ts';
+import { type ISocketInfo } from './ServicesHandler.types.ts';
 import Logger from '../LogRelated/Logger.ts';
 import { AddEventListenersAtOn } from './Events/SocketEvents.ts';
 
@@ -19,7 +19,14 @@ export class ServicesHandler implements IDriverEventInterface {
 	static io: Server;
 
 	//Socket info
-	static socketsInfo: SocketInfo[] = [];
+	static socketsInfo: ISocketInfo[] = [];
+
+	static GetSocketServiceName(incomingSocketID: string): string {
+		return (
+			this.socketsInfo.find((e) => e.socketID === incomingSocketID)
+				?.serviceName ?? ''
+		);
+	}
 
 	async StartupMethod(): Promise<boolean> {
 		ServicesHandler.server = createServer(express);
@@ -74,25 +81,16 @@ export class ServicesHandler implements IDriverEventInterface {
 			incomingCommandAndString.match(/\s(.*)/)?.[0] ?? ''
 		).trim();
 
-		//Sort through the available services
-		let selectedSocketInfo: SocketInfo = { socketID: '', serviceName: '' };
-		for (let i = 0; i < this.socketsInfo.length; i++) {
-			if (
-				this.socketsInfo[i].serviceName.toLowerCase() ===
-				intendedService.toLocaleLowerCase()
-			) {
-				selectedSocketInfo = this.socketsInfo[i];
-			}
-		}
+		let selectedSocketID: string =
+			this.socketsInfo.find(
+				(e) =>
+					e.serviceName.toLowerCase() ===
+					intendedService.toLowerCase(),
+			)?.socketID ?? '';
 
-		if (
-			!(
-				selectedSocketInfo.socketID === '' ||
-				selectedSocketInfo.socketID === undefined
-			)
-		) {
+		if (!(selectedSocketID === '' || selectedSocketID === undefined)) {
 			this.io
-				.to(selectedSocketInfo.socketID)
+				.to(selectedSocketID)
 				.emit('commandDelivery', messageContent);
 		} else {
 			ServicesHandler.Logger.log('No socket by name exists.');

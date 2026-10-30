@@ -1,4 +1,1 @@
-export type SocketInfo = {
-	socketID: string;
-	serviceName: string;
-};
+export type ISocketInfo = { socketID: string; serviceName: string };
