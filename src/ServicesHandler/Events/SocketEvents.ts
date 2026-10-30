@@ -1,8 +1,8 @@
-import { Socket } from "socket.io";
-import DiscordNotification from "./EventsSendingAck/DiscordNotification.ts";
-import Message from "./RegularEvents/Message.ts";
-import InfoReciever from "./RegularEvents/InfoReciever.ts";
-import Disconnect from "./PredefinedSocketEvents/Disconnect.ts";
+import { Socket } from 'socket.io';
+import DiscordNotification from './EventsWithCallback/DiscordNotification.ts';
+import Message from './RegularEvents/Message.ts';
+import InfoReciever from './RegularEvents/InfoReciever.ts';
+import Disconnect from './PredefinedSocketEvents/Disconnect.ts';
 
 export interface ISocketEvent {
 	eventName: string;
