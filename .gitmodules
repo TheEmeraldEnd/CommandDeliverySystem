@@ -1,0 +1,3 @@
+[submodule "ServiceClient"]
+	path = ServiceClient
+	url = https://github.com/TheEmeraldEnd/ServiceClient
