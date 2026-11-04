@@ -1,4 +1,4 @@
-import { ServiceClient } from "../ServicesHandler/ServicesClient/ServiceClient.ts";
+import { ServiceClient } from "../../ServiceClient/ServicesClient/ServiceClient.ts";
 import * as PathDatabaseHandler from "./FileRelated/PathDatabaseHandler.ts";
 import { AddEventListenersToClient } from "./StarterClientCommands.ts";
 
