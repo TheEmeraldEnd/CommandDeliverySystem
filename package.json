@@ -7,7 +7,8 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "node src/app.ts",
 		"typescript": "npx tsc",
-		"vitest": "vitest"
+		"vitest": "vitest",
+		"pullall": "git pull --recurse-submodule"
 	},
 	"repository": {
 		"type": "git",
