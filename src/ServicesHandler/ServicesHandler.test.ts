@@ -1,13 +1,26 @@
 import { expect, describe, test } from "vitest";
 import { ServicesHandler } from "./ServicesHandler";
-import { ServiceClient } from "./ServicesClient/ServiceClient";
+import { ServiceClient } from "../../submodules/ServiceClient/ServicesClient/ServiceClient";
 
-describe("Testing ServicesHandler's socket capabilities", () => {
-	test.todo("Test a connection", () => {
-		//Needs more work to understand why connection is not working here, but works in field tests
-		// let servicesHandlerVar = new ServicesHandler();
-		// servicesHandlerVar.StartupMethod();
-		// let serviceClientVar = new ServiceClient();
-		// expect(serviceClientVar.IsConnected()).toBe(true);
+describe("Server opening and closing functions", async () => {
+	test("If server opens and closes successfully", async () => {
+		const testServer: ServicesHandler = new ServicesHandler();
+		const openResult: boolean = await testServer.StartupMethod();
+		const closeResult: boolean = await testServer.SuccessMethod();
+
+		expect(openResult && closeResult).toBe(true);
 	});
+});
+
+describe("Test server and client functionality", async () => {
+	//Setup a test ServicesHandler
+	const testServer: ServicesHandler = new ServicesHandler();
+	await testServer.StartupMethod();
+
+	//Setup a client to test connectivity
+	const serviceName: string = "testClient";
+	const testPort: number = 8080;
+	const testClient: ServiceClient = new ServiceClient();
+
+	test.todo("Test a connection", () => {});
 });
