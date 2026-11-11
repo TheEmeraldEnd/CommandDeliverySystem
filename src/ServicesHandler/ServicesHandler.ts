@@ -1,11 +1,11 @@
-import { type IDriverEventInterface } from '../Driver.ts';
-import express from 'express';
-import { GlobalBridge } from '../GlobalBridge.ts';
-import { Server } from 'socket.io';
-import { createServer } from 'node:http';
-import { type ISocketInfo } from './ServicesHandler.types.ts';
-import Logger from '../LogRelated/Logger.ts';
-import { AddEventListenersAtOn } from './Events/SocketEvents.ts';
+import { type IDriverEventInterface } from "../Driver.ts";
+import express from "express";
+import { GlobalBridge } from "../GlobalBridge.ts";
+import { Server } from "socket.io";
+import { createServer } from "node:http";
+import { type ISocketInfo } from "./ServicesHandler.types.ts";
+import Logger from "../LogRelated/Logger.ts";
+import { AddEventListenersAtOn } from "./Events/SocketEvents.ts";
 
 //Express Tutorial on https://www.youtube.com/watch?v=-MTSQjw5DrM&t=151s
 //Socket.io tutorial on https://www.youtube.com/watch?v=1BfCnjr_Vjg&t=305s
@@ -24,7 +24,7 @@ export class ServicesHandler implements IDriverEventInterface {
 	static GetSocketServiceName(incomingSocketID: string): string {
 		return (
 			this.socketsInfo.find((e) => e.socketID === incomingSocketID)
-				?.serviceName ?? ''
+				?.serviceName ?? ""
 		);
 	}
 
@@ -38,9 +38,9 @@ export class ServicesHandler implements IDriverEventInterface {
 
 		let isServerListeningSuccessful = false;
 
-		ServicesHandler.io.on('connection', (socket) => {
+		ServicesHandler.io.on("connection", (socket) => {
 			AddEventListenersAtOn(socket);
-			socket.emit('getInfo');
+			socket.emit("getInfo");
 		});
 
 		ServicesHandler.server.listen(ServicesHandler.notificationPort, () => {
@@ -59,9 +59,9 @@ export class ServicesHandler implements IDriverEventInterface {
 	}
 
 	async SuccessMethod(): Promise<boolean> {
-		ServicesHandler.io.close();
-		ServicesHandler.server.close();
-		return true;
+		let result: boolean = await ServicesHandler.CloseAll();
+
+		return result;
 	}
 
 	async FailureMethod(): Promise<boolean> {
@@ -74,11 +74,11 @@ export class ServicesHandler implements IDriverEventInterface {
 		);
 
 		let intendedService: string = (
-			incomingCommandAndString.match(/^([\w\-]+)/)?.[0] ?? ''
+			incomingCommandAndString.match(/^([\w\-]+)/)?.[0] ?? ""
 		).trim();
 
 		let messageContent: string = (
-			incomingCommandAndString.match(/\s(.*)/)?.[0] ?? ''
+			incomingCommandAndString.match(/\s(.*)/)?.[0] ?? ""
 		).trim();
 
 		let selectedSocketID: string =
@@ -86,22 +86,35 @@ export class ServicesHandler implements IDriverEventInterface {
 				(e) =>
 					e.serviceName.toLowerCase() ===
 					intendedService.toLowerCase(),
-			)?.socketID ?? '';
+			)?.socketID ?? "";
 
-		if (!(selectedSocketID === '' || selectedSocketID === undefined)) {
+		if (!(selectedSocketID === "" || selectedSocketID === undefined)) {
 			this.io
 				.to(selectedSocketID)
-				.emit('commandDelivery', messageContent);
+				.emit("commandDelivery", messageContent);
 		} else {
-			ServicesHandler.Logger.log('No socket by name exists.');
+			ServicesHandler.Logger.log("No socket by name exists.");
 			GlobalBridge.SendNotification(
-				'No service by that name exists. Please try again.',
+				"No service by that name exists. Please try again.",
 			);
 		}
 	}
 
-	static async CloseAll() {
-		ServicesHandler.io.emit('ForceDisconnect');
-		ServicesHandler.io.disconnectSockets();
+	static async CloseAll(): Promise<boolean> {
+		let result: boolean = false;
+		try {
+			ServicesHandler.io.emit("ForceDisconnect");
+			ServicesHandler.io.disconnectSockets();
+			await ServicesHandler.server.close();
+			await ServicesHandler.io.httpServer.close();
+			await ServicesHandler.io.removeAllListeners();
+			await ServicesHandler.io.close();
+			await ServicesHandler.server.close();
+			result = true;
+		} catch {
+			result = false;
+		}
+
+		return result;
 	}
 }
