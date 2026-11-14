@@ -1,8 +1,8 @@
 import { type IDriverEventInterface } from "../Driver.ts";
 import express from "express";
 import { GlobalBridge } from "../GlobalBridge.ts";
-import { Server } from "socket.io";
-import { createServer } from "node:http";
+import { Server as IOServer } from "socket.io";
+import { createServer, type Server as httpServer } from "node:http";
 import { type ISocketInfo } from "./ServicesHandler.types.ts";
 import Logger from "../LogRelated/Logger.ts";
 import { AddEventListenersAtOn } from "./Events/SocketEvents.ts";
@@ -15,8 +15,8 @@ export class ServicesHandler implements IDriverEventInterface {
 	static Logger: Logger = new Logger(ServicesHandler.name);
 
 	//Has to be any type since the actual type requires alot of brackets.
-	static server: any;
-	static io: Server;
+	static server: httpServer;
+	static io: IOServer;
 
 	//Socket info
 	static socketsInfo: ISocketInfo[] = [];
@@ -30,16 +30,16 @@ export class ServicesHandler implements IDriverEventInterface {
 
 	async StartupMethod(): Promise<boolean> {
 		ServicesHandler.server = createServer(express);
-		ServicesHandler.io = new Server().listen(ServicesHandler.server, {
+		ServicesHandler.io = new IOServer().listen(ServicesHandler.server, {
 			cors: {
 				origin: `ws://localhost:${ServicesHandler.notificationPort}`,
 			},
 		});
 
 		let isServerListeningSuccessful = false;
-
-		ServicesHandler.io.on("connection", (socket) => {
+		ServicesHandler.io.on("connect", (socket) => {
 			AddEventListenersAtOn(socket);
+			ServicesHandler.Logger.log(`Socket ${socket.id} is joined`);
 			socket.emit("getInfo");
 		});
 
@@ -103,10 +103,11 @@ export class ServicesHandler implements IDriverEventInterface {
 	static async CloseAll(): Promise<boolean> {
 		let result: boolean = false;
 		try {
+			ServicesHandler.socketsInfo = [];
 			ServicesHandler.io.emit("ForceDisconnect");
 			ServicesHandler.io.disconnectSockets();
+			await ServicesHandler.server.removeAllListeners();
 			await ServicesHandler.server.close();
-			await ServicesHandler.io.httpServer.close();
 			await ServicesHandler.io.removeAllListeners();
 			await ServicesHandler.io.close();
 			await ServicesHandler.server.close();

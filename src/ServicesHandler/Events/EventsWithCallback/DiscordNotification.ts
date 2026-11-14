@@ -11,7 +11,7 @@ export default class DiscordNotification implements ISocketEvent {
 				incomingSocket.id,
 			);
 			GlobalBridge.SendNotification(`${serviceName}: ${notification}`);
-
+			ServicesHandler.Logger.warn(`${ServicesHandler.socketsInfo}`);
 			callback({
 				status: "ok",
 				message:
