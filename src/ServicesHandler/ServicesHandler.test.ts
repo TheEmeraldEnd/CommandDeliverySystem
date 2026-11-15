@@ -74,9 +74,10 @@ describe.todo("Integration Tests for connection", async () => {
 		ServicesHandler.io.emit("getInfo");
 		await TestClient1Class.Setup(testPort, serviceName1);
 
-		await setTimeout(() => {
-			result = ServicesHandler.socketsInfo.length;
-		}, 10000);
+		console.log(`${ServicesHandler.io.engine.clientsCount}`);
+		// await setTimeout(() => {
+		// 	console.log(`${ServicesHandler.io.engine.clientsCount}`);
+		// }, 10000);
 
 		await TestClient1Class.Shutdown();
 		await testServer.SuccessMethod();
